@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neur0Devil's place</title>
+    <meta name="robots" content="noindex">
+    <link rel="icon" href="/static/favicon.gif" type="image/gif">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+    <link rel="manifest" href="/static/site.webmanifest">
+    <title>About Neur0Devil</title>
     <style>
         #loadingPopup {
             display: none;
@@ -30,7 +36,7 @@
             position: fixed; /* Fixed to keep them in view */
             top: 0;
             bottom: 0;
-            width: 20%;
+            width: 15%;
             background-color: grey;
         }
         .left-stripe {
@@ -40,7 +46,7 @@
             right: 0;
         }
         .content {
-            width: 60%; /* Width of the content area */
+            width: 40%; /* Width of the content area */
             margin-top: 50px; /* Space from the top */
             text-align: center; /* Center text */
         }
@@ -51,24 +57,12 @@
         .small-text {
             font-size: 24px; /* Smaller text size */
         }
-        .emoticon-text{
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%,-50%);
-        text-align:center; /* Centered text alignment */
-        pointer-events:none;/* Prevent mouse events on text */
-       }
-       .hypertext{
-        font-size: 26px;
-        color: rgb(75, 138, 255);
-        font-weight: 900;
-       }
+        
         /* Cube Styles */
         .cube {
             position: absolute;
-            top: 20px; /* Distance from the top */
-            left: 20px; /* Distance from the left */
+            top: 600px; /* Distance from the top */
+            right: 100px; /* Distance from the left */
             width: 100px; /* Size of the cube */
             height: 100px; /* Size of the cube */
             transform-style: preserve-3d;
@@ -140,7 +134,14 @@
            text-align:center; /* Centered text alignment */
            pointer-events:none; /* Prevent mouse events on text */
        }
-       
+       .emoticon-text{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        text-align:center; /* Centered text alignment */
+        pointer-events:none;/* Prevent mouse events on text */
+       }
        /* Image Styles */
        .image-container {
            margin-top: 20px; /* Space above the image */
@@ -162,29 +163,24 @@
     <div class="stripe right-stripe"></div>
 
     <div class="content">
-        <div class="big-text">Welcome to My Page!</div>
+        <div class="big-text">Here be contact information</div>
         <div class="small-text">
-            This is the website of Neur0Devil. Here you can find shared files. Maybe something will appear later. Beware of the C U B E 
+            If you really want to contact me, here's how:
         </div>
-        <div class="hypertext">
-            <u><a href="about.html">About page</a></u>
+        <ul>
+            <li><a href="https://discord.gg/nZ7KGdzZ2X">Discord</a></li>
+            <li>Mail: leshasgusch@gmail.com </li>
+            <li><a href="https://t.me/Meme_Mailman_bot">My telegram bot I guess</a></li>
+        </ul>
+        <div class="big-text">
+            <a href="main.html"> Back to the main page! </a>
         </div>
-        <body>
-            <h1>Download Files from Shared Folder</h1>
-            <ul>
-                <!-- FILE_LINKS -->
-            </ul>
-        </body>
-        <body>
-            <h1>Random gif! (Taken from giphy.com)</h1>
-            <img src="RANDOM_GIF"/>
-        </body>
     </div>
     
     <!-- Cube -->
     <div class="cube">
         <div class="face1">
-          <div class="welcome-text">Welcome</div> <!-- Text on face1 -->
+          <div class="welcome-text">Welcome</div>
         </div>
         <div class="face2">
             <div class="welcome-text">To my</div>

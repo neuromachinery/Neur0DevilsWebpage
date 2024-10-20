@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <link rel="icon" href="/static/favicon.gif" type="image/gif">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+    <link rel="manifest" href="/static/site.webmanifest">
+    <title>Chat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #messages {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 300px;
+            overflow-y: scroll;
+            margin-bottom: 10px;
+        }
+        .big-text {
+            font-size: 48px; /* Big text size */
+            margin-bottom: 20px; /* Space between big and small text */
+        }
+        #messageForm {
+            display: flex;
+        }
+        #messageForm input[type="text"] {
+            flex: 1;
+            margin-right: 5px;
+        }
+        
+    </style>
+</head>
+<body>
+    <h1>Chat</h1>
+    <div id="messages"></div>
+    <form id="messageForm" onsubmit="sendMessage(event)" autocomplete="off"> <!-- Отключаем автозаполнение для всей формы -->
+        <input type="text" id="name" placeholder="Ваше имя" required>
+        <input type="text" id="message" placeholder="Ваше сообщение" required autocomplete="off"> <!-- Отключаем автозаполнение для поля сообщения -->
+        <button type="submit">Send</button>
+    </form>
+    <div class="big-text">
+        <a href="main.html"> Back to the main page! </a>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadChatHistory();
+        });
+
+        function loadChatHistory() {
+            fetch('/chat_history')
+                .then(response => response.json())
+                .then(data => {
+                    const messagesDiv = document.getElementById('messages');
+                    messagesDiv.innerHTML = ''; // Очищаем текущее содержимое
+
+                    data.messages.forEach(msg => {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.textContent = `${msg.name}: ${msg.message}`;
+                        messagesDiv.appendChild(messageDiv);
+                    });
+
+                    // Прокручиваем вниз к последнему сообщению
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                })
+                .catch(error => console.error('Ошибка:', error));
+        }
+
+        function sendMessage(event) {
+            event.preventDefault(); // предотвращаем перезагрузку страницы
+            const name = document.getElementById('name').value; // Сохраняем имя
+            const message = document.getElementById('message').value;
+
+            // Отправляем сообщение на сервер
+            fetch('/send_chat_message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.textContent = `${name}: ${message}`;
+                    document.getElementById('messages').appendChild(messageDiv);
+                    document.getElementById('message').value = ''; // Очищаем только поле сообщения
+                } else {
+                    alert('Ошибка при отправке сообщения.');
+                }
+            })
+            .catch(error => console.error('Ошибка:', error));
+        }
+    </script>
+</body>
+</html>

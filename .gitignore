@@ -5,3 +5,5 @@ routing.py
 Shared
 *.bat
 *.htm
+Temp
+static
