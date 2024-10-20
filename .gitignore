@@ -1,0 +1,7 @@
+DBconnect.py
+routing.py
+*.db
+*.pyc
+Shared
+*.bat
+*.htm
