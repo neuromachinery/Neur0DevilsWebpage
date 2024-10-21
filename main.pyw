@@ -2,15 +2,18 @@ import os
 import shutil
 from routing import HOSTS 
 from flask import Flask, send_file, render_template_string, request, abort, render_template,jsonify
+from flask_socketio import SocketIO, emit
 from urllib.parse import quote, unquote
 from time import time
 from DBconnect import SocketTransiever
 import GifScraper
 
 app = Flask(__name__)
+socketio = SocketIO(app)
 PORT = 8000
 SHARED_FOLDER = "Shared"  # Change this to your Shared folder path
 SIZE_LIMIT_MB = 100  # Set a size limit for notifications (e.g., 100 MB)
+CHAT_LIMIT = 150
 LogsTable = "LogsSite"
 ChatTable = "ChatSite"
 Temp = "Temp"
@@ -19,8 +22,8 @@ transiever.connect()
 SEND = transiever.send_message
 RECIEVE = transiever.receive_message
 def get_chat_history():
-    SEND(sender_name="SITE",message_type="LST",message=(ChatTable,50))
-    data = RECIEVE()["message"]
+    SEND(sender_name="SITE",message_type="LST",message=(ChatTable,CHAT_LIMIT,0,True))
+    data = RECIEVE()["message"][::-1]
     return data
 @app.route('/')
 @app.route('/main.html')
@@ -41,21 +44,17 @@ def serve_main_page():
 @app.route('/chat')
 def chat():
     return render_template('chat.html')
-@app.route('/send_chat_message', methods=['POST'])
-def send_chat_message():
-    data = request.get_json()
-    name = data.get('name')
-    message = data.get('message')
-    ip_address = request.remote_addr
-    timestamp = int(time())
-
-    # Формируем кортеж для записи в базу данных
+@socketio.on('send_message')
+def handle_send_message(data):
+    name = data['name']
+    message = data['message']
+    ip_address = request.remote_addr  # Получаем IP-адрес клиента
+    timestamp = int(time())  # Получаем текущее время в секундах
     log_entry = (name, ip_address, message, timestamp)
-
     # Отправляем сообщение через SEND
-    SEND(sender_name="SITE", message_type="LOG", message=(ChatTable, log_entry))
-
-    return jsonify(success=True)
+    SEND(sender_name="SITE", message_type="LOG", message=(ChatTable, log_entry))    
+    # Рассылаем сообщение всем подключенным клиентам
+    emit('receive_message', {'name': name, 'message': message}, broadcast=True)
 @app.route('/chat_history')
 def chat_history():
     messages = get_chat_history()  # Получаем историю сообщений
@@ -110,5 +109,5 @@ def log_request(response):
     return response
 
 if __name__ == "__main__":
-    
-    app.run(host="0.0.0.0", port=PORT, debug=False)
+    try:socketio.run(app,host="0.0.0.0", port=PORT, debug=False)
+    except KeyboardInterrupt:quit()

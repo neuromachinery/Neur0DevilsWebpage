@@ -10,6 +10,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
     <link rel="manifest" href="/static/site.webmanifest">
     <title>Chat</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -21,10 +22,6 @@
             overflow-y: scroll;
             margin-bottom: 10px;
         }
-        .big-text {
-            font-size: 48px; /* Big text size */
-            margin-bottom: 20px; /* Space between big and small text */
-        }
         #messageForm {
             display: flex;
         }
@@ -32,24 +29,25 @@
             flex: 1;
             margin-right: 5px;
         }
-        
+        #notificationToggle {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
-    <h1>Chat</h1>
+    <h1>Чат</h1>
     <div id="messages"></div>
-    <form id="messageForm" onsubmit="sendMessage(event)" autocomplete="off"> <!-- Отключаем автозаполнение для всей формы -->
+    <form id="messageForm" onsubmit="sendMessage(event)">
         <input type="text" id="name" placeholder="Ваше имя" required>
-        <input type="text" id="message" placeholder="Ваше сообщение" required autocomplete="off"> <!-- Отключаем автозаполнение для поля сообщения -->
+        <input type="text" id="message" placeholder="Ваше сообщение" required autocomplete="off">
         <button type="submit">Send</button>
     </form>
-    <div class="big-text">
-        <a href="main.html"> Back to the main page! </a>
-    </div>
+    <button id="notificationToggle">Disable notifications</button>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            loadChatHistory();
-        });
+        const socket = io(); // Подключаемся к WebSocket серверу
+        let notificationsEnabled = true; // Переменная для отслеживания состояния уведомлений
+        // Загрузка истории сообщений при загрузке страницы
+        document.addEventListener('DOMContentLoaded', loadChatHistory);
 
         function loadChatHistory() {
             fetch('/chat_history')
@@ -69,33 +67,43 @@
                 })
                 .catch(error => console.error('Ошибка:', error));
         }
+        socket.on('receive_message', function(data) {
+            const messagesDiv = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = `${data.name}: ${data.message}`;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight; // Прокручиваем вниз к последнему сообщению
+        // Показываем уведомление, если они включены
+        if (notificationsEnabled && data.name !== userName) {
+                showNotification(data.name, data.message);
+            }
+        });
+
+        function showNotification(name, message) {
+            if (Notification.permission === "granted") {
+                new Notification(`${name} написал:`, { body: message });
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        new Notification(`${name} написал:`, { body: message });
+                    }
+                });
+            }
+        }
 
         function sendMessage(event) {
-            event.preventDefault(); // предотвращаем перезагрузку страницы
-            const name = document.getElementById('name').value; // Сохраняем имя
+            event.preventDefault();
+            userName = document.getElementById('name').value; // Сохраняем имя пользователя
             const message = document.getElementById('message').value;
 
-            // Отправляем сообщение на сервер
-            fetch('/send_chat_message', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ name, message })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const messageDiv = document.createElement('div');
-                    messageDiv.textContent = `${name}: ${message}`;
-                    document.getElementById('messages').appendChild(messageDiv);
-                    document.getElementById('message').value = ''; // Очищаем только поле сообщения
-                } else {
-                    alert('Ошибка при отправке сообщения.');
-                }
-            })
-            .catch(error => console.error('Ошибка:', error));
+            socket.emit('send_message', { name: userName, message: message }); // Отправляем сообщение на сервер
+
+            document.getElementById('message').value = ''; // Очищаем поле сообщения
         }
+        document.getElementById('notificationToggle').addEventListener('click', function() {
+            notificationsEnabled = !notificationsEnabled; // Переключаем состояние уведомлений
+            this.textContent = notificationsEnabled ? 'Disable notifications' : 'Enable notifications'; // Обновляем текст кнопки
+        });
     </script>
 </body>
 </html>
