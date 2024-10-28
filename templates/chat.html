@@ -11,6 +11,8 @@
     <link rel="manifest" href="/static/site.webmanifest">
     <title>Chat</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+    <!-- Элемент для воспроизведения звука -->
+    <audio id="notificationSound" src="static/ping.mp3" preload="auto"></audio>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -76,9 +78,14 @@
         // Показываем уведомление, если они включены
         if (notificationsEnabled && data.name !== userName) {
                 showNotification(data.name, data.message);
+                playNotificationSound();
             }
         });
-
+        function playNotificationSound() {
+            const notificationSound = document.getElementById('notificationSound');
+            notificationSound.currentTime = 0; // Сбрасываем время воспроизведения
+            notificationSound.play(); // Воспроизводим звук
+        }
         function showNotification(name, message) {
             if (Notification.permission === "granted") {
                 new Notification(`${name} написал:`, { body: message });
