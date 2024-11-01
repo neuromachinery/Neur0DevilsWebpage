@@ -1,6 +1,7 @@
 import os
 import shutil
-from routing import HOSTS 
+from dotenv import load_dotenv, dotenv_values
+from sys import argv
 from flask import Flask, send_file, render_template_string, request, abort, render_template,jsonify,send_from_directory
 from flask_socketio import SocketIO, emit
 from uuid import uuid4
@@ -25,8 +26,19 @@ ChatTable = "ChatSite"
 FileTable = "FilenamesSite"
 MiscTable = "LogsMisc"
 Temp = "Temp"
-transiever = SocketTransiever(target=HOSTS["SITE"])
+HOST = "127.0.0.1"
 
+if len(argv)>1:
+    env = argv[1] 
+else: 
+    env = ".env"
+load_dotenv(env)
+config = dotenv_values(env)
+try:
+    transiever = SocketTransiever(target=(HOST,int(config["SITE"])))
+except KeyError:
+    print("Absence or corruption of .env file")
+    quit()
 SEND = transiever.send_message
 RECIEVE = transiever.receive_message
 def clean_uploads_folder():
@@ -192,7 +204,9 @@ def log_request(response):
 
 if __name__ == "__main__":
     clean_uploads_folder()
-    transiever.connect()
+    try:transiever.connect()
+    except KeyboardInterrupt:
+        quit()
     while True:
         try:
             @socketio.on_error()
