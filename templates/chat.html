@@ -17,6 +17,13 @@
         body {
             font-family: Arial, sans-serif;
         }
+        #drop_zone {
+            border: 2px dashed #ccc;
+            width: 300px;
+            height: 200px;
+            text-align: center;
+            margin: 10px auto;
+        }
         #messages {
             border: 1px solid #ccc;
             padding: 10px;
@@ -34,53 +41,112 @@
         #notificationToggle {
             margin-top: 10px;
         }
+        #returnButton {
+            display: block;
+            margin: 10px auto;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #returnButton:hover {
+            background-color: #0056b3;
+        }
+        /* Style for error message */
+        #error-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            display: none; /* Initially hidden */
+            z-index: 1000; /* Ensure it appears above other content */
+        }
+        .media-preview {
+        max-height: 1.5em; /* Adjust this value based on your line height */
+        max-width: auto; /* Allow width to adjust automatically */
+        margin-left: 10px; 
+        vertical-align: middle; /* Align vertically with text */
+        }
     </style>
 </head>
 <body>
     <h1>Чат</h1>
     <div id="messages"></div>
+    <div id="error-message"></div>
     <form id="messageForm" onsubmit="sendMessage(event)">
         <input type="text" id="name" placeholder="Ваше имя" required>
         <input type="text" id="message" placeholder="Ваше сообщение" required autocomplete="off">
         <button type="submit">Send</button>
     </form>
     <button id="notificationToggle">Disable notifications</button>
+    <div id="drop_zone">Drop files here</div>
+    <button id="returnButton" onclick="location.href='/'">Return to Main Page</button>
     <script>
+        function handleError(error) {
+            const errorMessageDiv = document.getElementById('error-message');
+            errorMessageDiv.textContent = error; // Set the error message
+            errorMessageDiv.style.display = 'block'; // Show the error message
+
+            // Hide the message after 3 seconds
+            setTimeout(() => {
+                errorMessageDiv.style.display = 'none';
+            }, 3000);
+        }
         const socket = io(); // Подключаемся к WebSocket серверу
         let notificationsEnabled = true; // Переменная для отслеживания состояния уведомлений
         // Загрузка истории сообщений при загрузке страницы
         document.addEventListener('DOMContentLoaded', loadChatHistory);
+        
+        function renderMessage(data) {
+            const messagesDiv = document.getElementById('messages');
+            const messageElement = document.createElement('div');
 
+            // Check if unique_id is present
+            if (data.unique_id) {
+                const originalFilename = data.message; // Assuming message contains original filename
+                const fileExtension = originalFilename.split('.').pop().toLowerCase(); // Get file extension
+
+                // Create a link for downloading the file
+                const fileLink = `<a href="/download/${data.unique_id}" target="_blank">${originalFilename}</a>`;
+                messageElement.innerHTML = `${data.name}: ${fileLink}`;
+            } else {
+                messageElement.textContent = `${data.name}: ${data.message}`;
+            }
+
+            messagesDiv.appendChild(messageElement);
+        }
+        
         function loadChatHistory() {
             fetch('/chat_history')
                 .then(response => response.json())
                 .then(data => {
                     const messagesDiv = document.getElementById('messages');
-                    messagesDiv.innerHTML = ''; // Очищаем текущее содержимое
-
+                    messagesDiv.innerHTML = ''; // Clear existing messages
+                
                     data.messages.forEach(msg => {
-                        const messageDiv = document.createElement('div');
-                        messageDiv.textContent = `${msg.name}: ${msg.message}`;
-                        messagesDiv.appendChild(messageDiv);
+                        renderMessage({ name: msg.name, message: msg.message, unique_id: msg.unique_id }); // Call render function for each message
                     });
-
-                    // Прокручиваем вниз к последнему сообщению
-                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight; // Прокручиваем вниз к последнему сообщению
                 })
-                .catch(error => console.error('Ошибка:', error));
+                .catch(error => console.error('Error loading chat history:', error));
         }
+        
         socket.on('receive_message', function(data) {
-            const messagesDiv = document.getElementById('messages');
-            const messageDiv = document.createElement('div');
-            messageDiv.textContent = `${data.name}: ${data.message}`;
-            messagesDiv.appendChild(messageDiv);
+            renderMessage(data);
+            messagesDiv = document.getElementById('messages');
             messagesDiv.scrollTop = messagesDiv.scrollHeight; // Прокручиваем вниз к последнему сообщению
-        // Показываем уведомление, если они включены
-        if (notificationsEnabled && data.name !== userName) {
-                showNotification(data.name, data.message);
-                playNotificationSound();
-            }
-        });
+            // Показываем уведомление, если они включены
+            if (notificationsEnabled && data.name !== userName) {
+                    showNotification(data.name, data.message);
+                    playNotificationSound();
+                }
+            });
         function playNotificationSound() {
             const notificationSound = document.getElementById('notificationSound');
             notificationSound.currentTime = 0; // Сбрасываем время воспроизведения
@@ -101,16 +167,67 @@
         function sendMessage(event) {
             event.preventDefault();
             userName = document.getElementById('name').value; // Сохраняем имя пользователя
-            const message = document.getElementById('message').value;
-
-            socket.emit('send_message', { name: userName, message: message }); // Отправляем сообщение на сервер
+            message = document.getElementById('message').value;
+            
+            socket.emit('send_message', { name: userName, message: message}); // Отправляем сообщение на сервер
 
             document.getElementById('message').value = ''; // Очищаем поле сообщения
+            messagesDiv = document.getElementById('messages');
+            messagesDiv.scrollTop = messagesDiv.scrollHeight; // Прокручиваем вниз к последнему сообщению
         }
         document.getElementById('notificationToggle').addEventListener('click', function() {
             notificationsEnabled = !notificationsEnabled; // Переключаем состояние уведомлений
             this.textContent = notificationsEnabled ? 'Disable notifications' : 'Enable notifications'; // Обновляем текст кнопки
         });
+        const dropZone = document.getElementById('drop_zone');
+
+        dropZone.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dropZone.style.borderColor = 'green';
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.style.borderColor = '#ccc';
+        });
+
+        dropZone.addEventListener('drop', (event) => {
+            event.preventDefault();
+            name = document.getElementById('name').value
+            dropZone.style.borderColor = '#ccc';
+            const files = event.dataTransfer.files;
+            uploadFiles(files,name);
+        });
+
+        function uploadFiles(files,name) {
+            const formData = new FormData();
+            for (let i = 0; i < files.length; i++) {
+                formData.append('file', files[i]);
+            }
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.error); // Generate an error with the message from the response
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Notify all clients about the new file with original filename and unique ID
+                    socket.emit('send_message', { 
+                        name: name, 
+                        message: data.original_filename, 
+                        unique_id: data.unique_id 
+                    });
+                }
+            })
+            .catch(error => handleError(error.message)); // Handle error
+        }
     </script>
 </body>
 </html>
