@@ -115,7 +115,9 @@ def handle_send_message(data):
 @app.route('/chat_history')
 def chat_history():
     messages = get_chat_history()  # Получаем историю сообщений
-    return jsonify(messages=[{'name': msg[0], 'message': msg[2],'unique_id': msg[4]} for msg in messages])
+    try:return jsonify(messages=[{'name': msg[0], 'message': msg[2],'unique_id': msg[4]} for msg in messages])
+    except IndexError as E:
+        print(E,str(E),messages)
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
