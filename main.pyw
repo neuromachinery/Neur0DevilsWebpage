@@ -1,4 +1,4 @@
-from os import mkdir,path,listdir,walk,makedirs
+from os import mkdir,path,listdir,walk,makedirs,chdir
 from shutil import rmtree,make_archive
 from dotenv import load_dotenv, dotenv_values
 from sys import argv
@@ -27,11 +27,11 @@ FileTable = "FilenamesSite"
 MiscTable = "LogsMisc"
 Temp = "Temp"
 HOST = "127.0.0.1"
-
+chdir(path.dirname(path.realpath(__file__)))
 if len(argv)>1:
     env = argv[1] 
 else: 
-    env = path.join(path.dirname(path.realpath(__file__)),".env")
+    env = ".env"
 load_dotenv(env)
 config = dotenv_values(env)
 try:
