@@ -1,5 +1,5 @@
-import os
-import shutil
+from os import mkdir,path,listdir,walk,makedirs
+from shutil import rmtree,make_archive
 from dotenv import load_dotenv, dotenv_values
 from sys import argv
 from flask import Flask, send_file, render_template_string, request, abort, render_template,jsonify,send_from_directory
@@ -31,13 +31,13 @@ HOST = "127.0.0.1"
 if len(argv)>1:
     env = argv[1] 
 else: 
-    env = ".env"
+    env = path.join(path.dirname(path.realpath(__file__)),".env")
 load_dotenv(env)
 config = dotenv_values(env)
 try:
     transiever = SocketTransiever(target=(HOST,int(config["SITE"])))
 except KeyError:
-    print("Absence or corruption of .env file")
+    print(f"Absence or corruption of .env file '{env}'")
     quit()
 SEND = transiever.send_message
 RECIEVE = transiever.receive_message
@@ -51,9 +51,9 @@ def clean_uploads_folder():
     # Конвертируем максимальный размер в байты
 
     # Проверяем, существует ли папка
-    if not os.path.exists(UPLOAD_FOLDER):
+    if not path.exists(UPLOAD_FOLDER):
         print(f"'{UPLOAD_FOLDER}' not found, creating... ",end="")
-        try:os.mkdir(UPLOAD_FOLDER)
+        try:mkdir(UPLOAD_FOLDER)
         except Exception as E:
             print(E,str(E))
             quit()
@@ -63,17 +63,17 @@ def clean_uploads_folder():
 
     # Рассчитываем общий размер файлов в папке
     total_size = 0
-    for dirpath, dirnames, filenames in os.walk(UPLOAD_FOLDER):
+    for dirpath, dirnames, filenames in walk(UPLOAD_FOLDER):
         for file in filenames:
-            file_path = os.path.join(dirpath, file)
-            total_size += os.path.getsize(file_path)
+            file_path = path.join(dirpath, file)
+            total_size += path.getsize(file_path)
 
     print(f"'{UPLOAD_FOLDER}' total size: {total_size / (1024 * 1024):.2f} MB")
 
     # Если общий размер превышает заданный лимит, удаляем все файлы
     if total_size > SIZE_LIMIT_MB*1024*1024:
-        shutil.rmtree(UPLOAD_FOLDER)  # Удаляем папку и все её содержимое
-        os.makedirs(UPLOAD_FOLDER)     # Восстанавливаем пустую папку
+        rmtree(UPLOAD_FOLDER)  # Удаляем папку и все её содержимое
+        makedirs(UPLOAD_FOLDER)     # Восстанавливаем пустую папку
         print(f"'{UPLOAD_FOLDER}' was purged.")
     else:
         print("Size is acceptable. No cleaning required")
@@ -87,9 +87,9 @@ def serve_main_page():
     with open('templates/main.html', 'r', encoding='utf-8') as file:
         html_content = file.read()
 
-    items = os.listdir(SHARED_FOLDER)
+    items = listdir(SHARED_FOLDER)
     item_links = ''.join(
-        create_link(item) for item in items if os.path.exists(os.path.join(SHARED_FOLDER, item))
+        create_link(item) for item in items if path.exists(path.join(SHARED_FOLDER, item))
     )
 
     html_content = html_content.replace('<!-- FILE_LINKS -->', item_links)
@@ -133,7 +133,7 @@ def upload_file():
     
     # Save the file with the unique identifier but keep the original filename
     original_filename = file.filename
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], unique_id)
+    filepath = path.join(app.config['UPLOAD_FOLDER'], unique_id)
     
     # Save the file with the unique ID as its name
     try:file.save(filepath)
@@ -159,15 +159,15 @@ def download_file(unique_id):
 def about():
     return render_template('about.html')
 def create_link(item):
-    item_path = os.path.join(SHARED_FOLDER, item)
+    item_path = path.join(SHARED_FOLDER, item)
     size_warning = ""
     
-    if os.path.isdir(item_path):
+    if path.isdir(item_path):
         folder_size = get_folder_size(item_path)
         if folder_size > SIZE_LIMIT_MB * 1024 * 1024:
             size_warning = f'<span style="color: red;">(Large folder: {folder_size / (1024 * 1024):.2f} MB)</span>'
-    elif os.path.isfile(item_path):
-        file_size = os.path.getsize(item_path)
+    elif path.isfile(item_path):
+        file_size = path.getsize(item_path)
         if file_size > SIZE_LIMIT_MB * 1024 * 1024:
             size_warning = f'<span style="color: red;">(Large file: {file_size / (1024 * 1024):.2f} MB)</span>'
     
@@ -175,20 +175,20 @@ def create_link(item):
 
 def get_folder_size(folder):
     total_size = 0
-    for dirpath, dirnames, filenames in os.walk(folder):
+    for dirpath, dirnames, filenames in walk(folder):
         for f in filenames:
-            fp = os.path.join(dirpath, f)
-            total_size += os.path.getsize(fp)
+            fp = path.join(dirpath, f)
+            total_size += path.getsize(fp)
     return total_size
 
 @app.route('/download/<path:item_name>')
 def handle_download(item_name):
-    item_path = os.path.join(SHARED_FOLDER, unquote(item_name))
+    item_path = path.join(SHARED_FOLDER, unquote(item_name))
 
-    if os.path.isdir(item_path):
-        zip_file_path = shutil.make_archive(f"{Temp}/{item_name}", 'zip', item_path)
+    if path.isdir(item_path):
+        zip_file_path = make_archive(f"{Temp}/{item_name}", 'zip', item_path)
         return send_file(zip_file_path, as_attachment=True)
-    elif os.path.isfile(item_path):
+    elif path.isfile(item_path):
         return send_file(item_path, as_attachment=True)
     
     abort(404)
