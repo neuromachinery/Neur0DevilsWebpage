@@ -1,46 +1,57 @@
-from os import mkdir,path,listdir,walk,makedirs,chdir
+from os import mkdir,path,listdir,walk,makedirs,chdir,link
 from shutil import rmtree,make_archive
-from dotenv import load_dotenv, dotenv_values
-from sys import argv
 from flask import Flask, send_file, render_template_string, request, abort, render_template,jsonify,send_from_directory
 from flask_socketio import SocketIO, emit
 from uuid import uuid4
 from urllib.parse import quote, unquote
-from time import time
 from datetime import datetime
 from DBconnect import SocketTransiever
+from traceback import format_exc
+from threading import Thread
+from asyncio import Queue,QueueEmpty
 import GifScraper
-
 from time import sleep
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'  # Define where to save uploaded files
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 socketio = SocketIO(app)
-PORT = 8000
+HOST = "127.0.0.1"
+EXT_PORT = 8000
+SITE_PORT = 54322
+DB_PORT = 54321
+MMM_PORT = 54323
+ADDRESS_DICT = {
+    "DB":(HOST,DB_PORT),
+    "MMM":(HOST,MMM_PORT),
+    "SITE":(HOST,SITE_PORT)
+}
+transiever_queue = Queue()
+
 SHARED_FOLDER = "Shared"  # Change this to your Shared folder path
 SIZE_LIMIT_MB = 100  # Set a size limit (e.g., 100 MB)
 CHAT_LIMIT = 150
+TIMEOUT=0.1 #sec
+WAIT_LIMIT = 3 #sec
 LogsTable = "LogsSite"
 ChatTable = "ChatSite"
 FileTable = "FilenamesSite"
 MiscTable = "LogsMisc"
 Temp = "Temp"
-HOST = "127.0.0.1"
 chdir(path.dirname(path.realpath(__file__)))
-if len(argv)>1:
-    env = argv[1] 
-else: 
-    env = ".env"
-load_dotenv(env)
-config = dotenv_values(env)
-try:
-    transiever = SocketTransiever(target=(HOST,int(config["SITE"])))
-except KeyError:
-    print(f"Absence or corruption of .env file '{env}'")
-    quit()
+transiever = SocketTransiever(ADDRESS_DICT["SITE"])
 SEND = transiever.send_message
-RECIEVE = transiever.receive_message
+def transiever_queue_get():
+    i = 0.0
+    while i<WAIT_LIMIT:
+        try: return transiever_queue.get_nowait()
+        except QueueEmpty:
+            sleep(TIMEOUT)
+            i+=TIMEOUT
+    raise ConnectionError
+RECIEVE = transiever_queue_get
+def now():
+    return datetime.now().strftime("[%d.%m.%Y@%H:%M:%S]")
 def clean_uploads_folder():
     """
     Удаляет все файлы в папке, если общий размер файлов превышает заданное значение.
@@ -55,7 +66,7 @@ def clean_uploads_folder():
         print(f"'{UPLOAD_FOLDER}' not found, creating... ",end="")
         try:mkdir(UPLOAD_FOLDER)
         except Exception as E:
-            print(E,str(E))
+            print(format_exc(),str(E))
             quit()
         else:
             print("created.")
@@ -63,7 +74,7 @@ def clean_uploads_folder():
 
     # Рассчитываем общий размер файлов в папке
     total_size = 0
-    for dirpath, dirnames, filenames in walk(UPLOAD_FOLDER):
+    for dirpath, dirnames, filenames in walk(UPLOAD_FOLDER,followlinks=True):
         for file in filenames:
             file_path = path.join(dirpath, file)
             total_size += path.getsize(file_path)
@@ -78,8 +89,10 @@ def clean_uploads_folder():
     else:
         print("Size is acceptable. No cleaning required")
 def get_chat_history():
-    SEND(sender_name="SITE",message_type="LST",message=(ChatTable,CHAT_LIMIT,0,True))
-    data = RECIEVE()["message"][::-1]
+    SEND(ADDRESS_DICT["DB"],sender_name="SITE",target_name="DB",message_type="LST",message=(ChatTable,CHAT_LIMIT,0,True))
+    try:data = RECIEVE()["message"][::-1]
+    except ConnectionError:
+        return jsonify({'error': 'Database unresponsive'}), 500
     return data
 @app.route('/')
 @app.route('/main.html')
@@ -104,20 +117,27 @@ def chat():
 def handle_send_message(data):
     name = data['name']
     message = data['message']
-    unique_id = data['unique_id'] if 'unique_id' in data else None
-    ip_address = request.remote_addr  # Получаем IP-адрес клиента
-    timestamp = int(time())  # Получаем текущее время в секундах
-    log_entry = (name, ip_address, message, timestamp,unique_id)
+    channel = data['channel']
+    file_id = data['unique_id'] if 'unique_id' in data else None
+    external = bool(data['external']) if 'external' in data else False
+    if external and file_id:
+        unique_id = str(uuid4())
+        link(file_id,path.join(app.config['UPLOAD_FOLDER'], unique_id))
+        SEND(ADDRESS_DICT["DB"],sender_name="SITE", target_name="DB",message_type="LOG", message=(FileTable, (unique_id, file_id)))
+        file_id = unique_id
+    ip_address = request.remote_addr # Получаем IP-адрес клиента
+    timestamp = now()  # Получаем текущее время
+    log_entry = (name, ip_address, message, timestamp,file_id)
     # Отправляем сообщение через SEND
-    SEND(sender_name="SITE", message_type="LOG", message=(ChatTable, log_entry))    
+    SEND(ADDRESS_DICT["DB"],sender_name="SITE",target_name="DB", message_type="LOG", message=(ChatTable, log_entry))    
     # Рассылаем сообщение всем подключенным клиентам
-    emit('receive_message', {'name': name, 'message': message, 'unique_id': unique_id}, broadcast=True)
+    emit('receive_message', {'name': name, 'time':timestamp, 'message': message, 'unique_id': file_id, "channel": channel,"external": external}, broadcast=True)
 @app.route('/chat_history')
 def chat_history():
     messages = get_chat_history()  # Получаем историю сообщений
-    try:return jsonify(messages=[{'name': msg[0], 'message': msg[2],'unique_id': msg[4]} for msg in messages])
+    try:return jsonify(messages=[{'name': msg[0],'ip':msg[1], 'message': msg[2],'time':msg[3],'unique_id': msg[4]} for msg in messages])
     except IndexError as E:
-        print(E,str(E),messages)
+        print(format_exc(),str(E),messages)
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
@@ -140,19 +160,22 @@ def upload_file():
     except OSError:
         return jsonify({'error': 'Not enough space on the device'}), 507
     # Log the original filename and its unique ID
-    SEND(sender_name="SITE", message_type="LOG", message=(FileTable, (unique_id, original_filename)))
+    SEND(ADDRESS_DICT["DB"],sender_name="SITE", target_name="DB",message_type="LOG", message=(FileTable, (unique_id, original_filename)))
 
     return jsonify({'success': True, 'original_filename': original_filename, 'unique_id': unique_id}), 200
 
 @app.route('/download/<unique_id>')
 def download_file(unique_id):
-    print(f"{unique_id} -> ",end="")
-    SEND(sender_name="SITE", message_type="GET", message=(FileTable, "uuid4", unique_id))
-    data = RECIEVE()["message"]
+    #print(f"{unique_id} -> ",end="")
+    SEND(ADDRESS_DICT["DB"],sender_name="SITE", target_name="DB",message_type="GET", message=(FileTable, "uuid4", unique_id))
+    try:
+        data = RECIEVE()["message"]
+    except ConnectionError:
+        return jsonify({'error': 'Database unresponsive'}), 500
     sleep(0.17)
     if not data:
         return jsonify({'error': 'File not found'}), 404
-    print(data[0][1])
+    #print(data[0][1])
     original_filename = data[0][1]
     return send_from_directory(app.config['UPLOAD_FOLDER'], unique_id, as_attachment=True,download_name=original_filename)
 @app.route('/about')
@@ -199,25 +222,57 @@ def log_request(response):
         request.remote_addr,
         response.status_code,
         request.method + ' ' + request.path,
-        int(time()),
+        now(),
     )
-    SEND(sender_name="SITE", message_type="LOG", message=(LogsTable, message))
+    SEND(ADDRESS_DICT["DB"],sender_name="SITE", target_name="DB",message_type="LOG", message=(LogsTable, message))
     return response
+def ExceptionHandler(exception:Exception):
+    exception_formatted = f"{exception}; {format_exc()}; {type(exception)}"
+    print(exception_formatted)
+    date = now()
+    SEND(
+        ADDRESS_DICT["DB"],
+        sender_name="SITE",
+        target_name="DB", 
+        message_type="LOG",
+        message=(MiscTable,(exception_formatted,date))
+    )
 
+class NetPort():
+    def __init__(self) -> None:
+        self.thread = Thread(target=self.main,daemon=True)
+    def process(self,conn,addr):
+        try:
+            while not conn._closed:
+                data = transiever.receive_message(conn)
+                if data["name"] == "DB":
+                    transiever_queue.put_nowait(data)
+                    return
+        except OSError:pass
+        except Exception as E:
+            ExceptionHandler(E)
+        finally:
+            if not conn._closed:conn.close()
+    def main(self):
+        transiever = SocketTransiever((HOST,SITE_PORT))
+        while True:
+            Thread(target=self.process,args=transiever.accept(),daemon=True).start()
+
+    def run(self):
+        try:self.thread.start()
+        except Exception as E:
+            ExceptionHandler(E)
 if __name__ == "__main__":
     clean_uploads_folder()
-    try:transiever.connect()
-    except KeyboardInterrupt:
-        quit()
     while True:
         try:
             @socketio.on_error()
             def error_handler(E):
-                SEND(sender_name="SITE", message_type="LOG",message=(MiscTable,(str(E),datetime.now().strftime("[%d.%m.%Y@%H:%M:%S]"))))
+                ExceptionHandler(E)
             @socketio.on('disconnect')
-            def handle_disconnect():
-                SEND(sender_name="SITE", message_type="LOG",message=(MiscTable,("disconnect",datetime.now().strftime("[%d.%m.%Y@%H:%M:%S]"))))
-            socketio.run(app,host="0.0.0.0", port=PORT, debug=False)
+            def handle_disconnect():pass
+            NetPort().run()
+            socketio.run(app,host="0.0.0.0", port=EXT_PORT, debug=False)
         except KeyboardInterrupt:quit()
         except Exception as E:
-            SEND(sender_name="SITE", message_type="LOG",message=(MiscTable,(str(E),datetime.now().strftime("[%d.%m.%Y@%H:%M:%S]"))))
+            ExceptionHandler(E)

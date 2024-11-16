@@ -169,7 +169,7 @@
             userName = document.getElementById('name').value; // Сохраняем имя пользователя
             message = document.getElementById('message').value;
             
-            socket.emit('send_message', { name: userName, message: message}); // Отправляем сообщение на сервер
+            socket.emit('send_message', { name: userName, message: message, channel:-1, external:false}); // Отправляем сообщение на сервер
 
             document.getElementById('message').value = ''; // Очищаем поле сообщения
             messagesDiv = document.getElementById('messages');
@@ -222,7 +222,9 @@
                     socket.emit('send_message', { 
                         name: name, 
                         message: data.original_filename, 
-                        unique_id: data.unique_id 
+                        unique_id: data.unique_id,
+                        channel: -1,
+                        external: false
                     });
                 }
             })
