@@ -38,7 +38,8 @@ ChatTable = "ChatSite"
 FileTable = "FilenamesSite"
 MiscTable = "LogsMisc"
 Temp = "Temp"
-chdir(path.dirname(path.realpath(__file__)))
+CWD = path.dirname(path.realpath(__file__))
+chdir(CWD)
 transiever = SocketTransiever(ADDRESS_DICT["SITE"])
 SEND = transiever.send_message
 def transiever_queue_get():
@@ -245,9 +246,13 @@ class NetPort():
         try:
             while not conn._closed:
                 data = transiever.receive_message(conn)
+                if not data: break
                 if data["name"] == "DB":
                     transiever_queue.put_nowait(data)
                     return
+                if data["name"] == "MMM" and data["type"] == "GET":
+                    response = {"CWD":CWD,"UPLOADS":UPLOAD_FOLDER,"CWD+UPLOADS":path.join(CWD,UPLOAD_FOLDER)}[data["message"]]
+                    transiever.send_message(ADDRESS_DICT["MMM"],"SITE","MMM","RES",response)
         except OSError:pass
         except Exception as E:
             ExceptionHandler(E)
