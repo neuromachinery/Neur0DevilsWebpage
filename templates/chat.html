@@ -73,6 +73,26 @@
         margin-left: 10px; 
         vertical-align: middle; /* Align vertically with text */
         }
+
+        ::-webkit-scrollbar {
+        width: 10px; /* Ширина скроллбара */
+        }
+
+        /* Цвет фона области, где находится полоса прокрутки */
+        ::-webkit-scrollbar-track {
+            background-color: #f1f1f1; /* Серый фон */
+        }
+
+        /* Стилевое оформление самой ползунки */
+        ::-webkit-scrollbar-thumb {
+            background-color: #333; /* Темный цвет ползунка */
+            border-radius: 20px; /* Скругление углов */
+        }
+
+        /* Видимость и изменение состояния при наведении мыши */
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #555; /* Изменение цвета при наведении */
+        }
     </style>
 </head>
 <body>
@@ -93,6 +113,7 @@
     <div id="drop_zone">Drop files here</div>
     <button id="returnButton" onclick="location.href='/'">Return to Main Page</button>
     <script type="text/javascript">
+        
     function setColor() {
         document.body.style.backgroundColor = '#121212';
         document.body.style.color = 'white';
