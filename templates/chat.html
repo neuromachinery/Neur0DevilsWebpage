@@ -77,17 +77,43 @@
 </head>
 <body>
     <h1>Чат</h1>
+    <p>
+    <img src="/static/moon.jpg" width="25" height="25" id="changetheme" onclick="setColor()"/>
+    <img src="/static/MaxwellIdle.gif" width="25"/>
+    </p>    
     <div id="messages"></div>
     <div id="error-message"></div>
     <form id="messageForm" onsubmit="sendMessage(event)">
-        <input type="text" id="name" placeholder="Ваше имя" required>
-        <input type="text" id="message" placeholder="Ваше сообщение" required autocomplete="off">
-        <button type="submit">Send</button>
+        <input type="text" id="namefield" placeholder="Ваше имя" required>
+        <input type="text" id="messagefield" placeholder="Ваше сообщение" required autocomplete="off">
+        <button type="submit" id="sentmessage">Send</button>
+        <img src="/static/pa6v03g1glo91.gif" width="25" />
     </form>
     <button id="notificationToggle">Disable notifications</button>
     <div id="drop_zone">Drop files here</div>
     <button id="returnButton" onclick="location.href='/'">Return to Main Page</button>
-    <script>
+    <script type="text/javascript">
+    function setColor() {
+        document.body.style.backgroundColor = '#121212';
+        document.body.style.color = 'white';
+
+        let inputField = document.getElementById("namefield");
+        inputField.style.backgroundColor = "#181818"; 
+        inputField.style.color = "white";
+
+        let inputField2 = document.getElementById("messagefield");
+        inputField2.style.backgroundColor = "#181818"; 
+        inputField2.style.color = "white";
+
+        let inputField3 = document.getElementById("sentmessage");
+        inputField3.style.backgroundColor = "#181818"; 
+        inputField3.style.color = "white";
+
+        let inputField4 = document.getElementById("notificationToggle");
+        inputField4.style.backgroundColor = "#181818"; 
+        inputField4.style.color = "white";
+    }
+
         function handleError(error) {
             const errorMessageDiv = document.getElementById('error-message');
             errorMessageDiv.textContent = error; // Set the error message
