@@ -1,482 +1,527 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="robots" content="noindex">
-    <link rel="icon" href="/static/favicon.gif" type="image/gif">
-    <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
-    <link rel="manifest" href="/static/site.webmanifest">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="/static/favicon.gif" type="image/gif" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/static/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/static/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/static/favicon-16x16.png"
+    />
+    <link rel="manifest" href="/static/site.webmanifest" />
     <title>Chat</title>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.3.0/css/all.css" >
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v6.3.0/css/all.css"
+    />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
     <!-- Элемент для воспроизведения звука -->
     <audio id="notificationSound" src="static/ping.mp3" preload="auto"></audio>
-</head>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c&display=swap');
-        h1 {
-            font-family: "M PLUS Rounded 1c", serif;
-            font-weight: 600;
-            font-style: normal;
-        }
-        .active h1{
-            color: white;
-        }
+  </head>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c&display=swap");
 
-        :root {
-            --dark: #292c35; 
-            --light: #f1f1f1;
-            --label: #000000; 
-        }
-        
-        /*reset styles*/
-        * {
-            margin: 0; 
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+    h1 {
+      font-family: "M PLUS Rounded 1c", serif;
+      font-weight: 600;
+      font-style: normal;
+    }
 
-        /*body*/
+    .active h1 {
+      color: white;
+    }
 
-        
-        /*change background*/
-        body.active {
-            background-color: var(--dark); 
-        }
-        
-        /*move toggler when input is checked*/
-        body.active .switcher-label .switcher-toggler  {
-            left: 56%;
-        }
-        
-        /*input checkbox*/
-        input[type='checkbox']{
-            opacity: 0;
-            display: none;
-            visibility: hidden;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
+    :root {
+      --dark: #292c35;
+      --light: #f1f1f1;
+      --label: #000000;
+    }
 
-        .active input{
-            background-color: #3f3f3f;
-            color: #ffffff;
-            font-style: var(--light);
-            border-radius: 10px;
-            padding: 5px;
-        }
+    /*reset styles*/
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        .active button {
-            background-color: #cc7700;
-        }
+    /*change background*/
+    body.active {
+      background-color: var(--dark);
+    }
 
-        .active #messages {
-            background-color: #3f3f3f;            
-            border: 3px #000000 ridge;
-            border-radius: 10px;
-            border-color: #ccc;
-            color: #ffffff;
-            padding: 10px;
-            height: 300px;
-            overflow-y: auto;
-            transition: background-color .5s ease;
-            margin-bottom: 10px;
-        }
+    /*move toggler when input is checked*/
+    body.active .switcher-label .switcher-toggler {
+      left: 56%;
+    }
 
-        .active #drop_zone {
-            border: 2px dashed #ffffff;
-            color: #ffffff;
-            padding-top: 5px;
-            border-radius: 10px;
-            width: 300px;
-            height: 200px;
-            text-align: center;
-            margin: 10px auto;
-        }
-        /*label*/
-        .switcher-label{
-            background-color: var(--label);
-            cursor: pointer;
-            width: 60px;
-            height: 27px;
-            display: flex;
-            align-items: center;
-            padding: 2px 7px;
-            justify-content: space-between;
-            border-radius: 30px;
-            position: relative;
-            margin-bottom: 5px;
-        }
-        
-        /*toggler*/
-        .switcher-label .switcher-toggler {
-            background-color: white; 
-            width: 25px;
-            height: 25px; 
-            z-index: 1; 
-            border-radius: 50%;
-            display: block;
-            position:absolute;
-            left: 2%;
-            transition: all .5s ease;
-        }
-        
-        /*sun and moon images*/
-        .switcher-label i {
-            font-size: 15px; 
-        }
-        
-        .switcher-label i:first-child {
-          color: dodgerblue;
-        }
-        
-        .switcher-label i:last-child {
-          color: gold;
-        }
+    input[type="checkbox"] {
+      opacity: 0;
+      display: none;
+      visibility: hidden;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
 
-        body {
-            margin: 10px;            
-            font-family: Arial, sans-serif;
-            justify-content: center; 
-            background-color: var(--light);
-            transition: background-color .5s ease;
-            position: relative;
-        }
+    .active input {
+      background-color: #3f3f3f;
+      color: #ffffff;
+      font-style: var(--light);
+      border-radius: 10px;
+      padding: 5px;
+    }
 
-        #messages {
-            background-color: #ffffff;
-            border: 3px #000000 ridge;
-            border-radius: 10px;
-            border-color: #ccc;
-            color: #000000;
-            padding: 10px;
-            height: 300px;
-            overflow-y: auto;
-            margin-bottom: 10px;
-        }
+    .active button {
+      background-color: #cc7700;
+    }
 
+    .active #messages {
+      background-color: #3f3f3f;
+      border: 3px #000000 ridge;
+      border-radius: 10px;
+      border-color: #ccc;
+      color: #ffffff;
+      padding: 10px;
+      height: 300px;
+      overflow-y: auto;
+      transition: background-color 0.5s ease;
+      margin-bottom: 10px;
+    }
 
-        input{
-            border-radius: 10px;
-            border-color: #ccc;
-            color: #000000;
-            transition: background-color .5s ease;
-            padding: 5px;
-        }
+    .active #drop_zone {
+      border: 2px dashed #ffffff;
+      color: #ffffff;
+      padding-top: 5px;
+      border-radius: 10px;
+      width: 300px;
+      height: 200px;
+      text-align: center;
+      margin: 10px auto;
+    }
 
-        button{
-            border-radius: 5px;
-            font-family: "M PLUS Rounded 1c", serif;
-            cursor: pointer;
-            padding: 10px 20px;
-            border: none;
-            background-color: #007bff;
-            color: white;
-            font-weight: bold;
-            transition: background-color .5s ease;
-            border-radius: 5px;
-        }
+    body {
+      margin: 10px;
+      font-family: Arial, sans-serif;
+      justify-content: center;
+      background-color: var(--light);
+      transition: background-color 0.5s ease;
+      position: relative;
+    }
 
-        #drop_zone {
-            border: 2px dashed #000000;
-            padding-top: 5px;
-            border-radius: 10px;
-            width: 300px;
-            height: 200px;
-            text-align: center;
-            transition: background-color .5s ease;
-            margin: 10px auto;
-        }
+    #messages {
+      background-color: #ffffff;
+      border: 3px #000000 ridge;
+      border-radius: 10px;
+      border-color: #ccc;
+      color: #000000;
+      padding: 10px;
+      height: 300px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
 
-        #messageForm {
-            display: flex;
-        }
-        #messageForm input[type="text"] {
-            flex: 1;
-            margin-right: 5px;
-        }
-        #notificationToggle {
-            margin-top: 10px;
-        }
-        #returnButton {
-            display: block;
-            margin: 10px auto;
-            padding: 10px 20px;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        #returnButton:hover {
-            background-color: #0056b3;
-        }
-        /* Style for error message */
-        #error-message {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(255, 0, 0, 0.8);
-            color: white;
-            padding: 15px;
-            border-radius: 5px;
-            display: none; /* Initially hidden */
-            z-index: 1000; /* Ensure it appears above other content */
-        }
-        .media-preview {
-        max-height: 1.5em; /* Adjust this value based on your line height */
-        max-width: auto; /* Allow width to adjust automatically */
-        margin-left: 10px; 
-        vertical-align: middle; /* Align vertically with text */
-        }
+    input {
+      border-radius: 10px;
+      border-color: #ccc;
+      color: #000000;
+      transition: background-color 0.5s ease;
+      padding: 5px;
+    }
 
-        ::-webkit-scrollbar {
-        width: 10px; /* Ширина скроллбара */
-        }
+    button {
+      border-radius: 5px;
+      font-family: "M PLUS Rounded 1c", serif;
+      cursor: pointer;
+      padding: 10px 20px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      font-weight: bold;
+      transition: background-color 0.5s ease;
+      border-radius: 5px;
+    }
 
-        /* Цвет фона области, где находится полоса прокрутки */
-        ::-webkit-scrollbar-track {
-            background-color: #979797; /* Серый фон */
-            border-radius: 5px;
-        }
+    #drop_zone {
+      border: 2px dashed #000000;
+      padding-top: 5px;
+      border-radius: 10px;
+      width: 300px;
+      height: 200px;
+      text-align: center;
+      transition: background-color 0.5s ease;
+      margin: 10px auto;
+    }
 
-        /* Стилевое оформление самой ползунки */
-        ::-webkit-scrollbar-thumb {
-            background-color: #333; /* Темный цвет ползунка */
-            border-radius: 30px; /* Скругление углов */
-        }
+    #messageForm {
+      display: flex;
+    }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background-color: #555; 
-        }
+    #messageForm input[type="text"] {
+      flex: 1;
+      margin-right: 5px;
+    }
 
-    </style>
+    #notificationToggle {
+      margin-top: 10px;
+    }
 
-<body >
+    #returnButton {
+      display: block;
+      margin: 10px auto;
+      padding: 10px 20px;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #returnButton:hover {
+      background-color: #0056b3;
+    }
+
+    /* Style for error message */
+    #error-message {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(255, 0, 0, 0.8);
+      color: white;
+      padding: 15px;
+      border-radius: 5px;
+      display: none; /* Initially hidden */
+      z-index: 1000; /* Ensure it appears above other content */
+    }
+
+    .media-preview {
+      max-height: 1.5em; /* Adjust this value based on your line height */
+      max-width: auto; /* Allow width to adjust automatically */
+      margin-left: 10px;
+      vertical-align: middle; /* Align vertically with text */
+    }
+
+    .switcher-label {
+      background-color: var(--label);
+      cursor: pointer;
+      width: 60px;
+      height: 27px;
+      display: flex;
+      align-items: center;
+      padding: 2px 7px;
+      justify-content: space-between;
+      border-radius: 30px;
+      position: relative;
+      margin-bottom: 5px;
+    }
+
+    /*toggler*/
+    .switcher-label .switcher-toggler {
+      background-color: white;
+      width: 25px;
+      height: 25px;
+      z-index: 1;
+      border-radius: 50%;
+      display: block;
+      position: absolute;
+      left: 2%;
+      transition: all 0.5s ease;
+    }
+
+    /*sun and moon images*/
+    .switcher-label i {
+      font-size: 15px;
+    }
+
+    .switcher-label i:first-child {
+      color: dodgerblue;
+    }
+
+    .switcher-label i:last-child {
+      color: gold;
+    }
+
+    ::-webkit-scrollbar {
+      width: 10px; /* Ширина скроллбара */
+    }
+
+    /* Цвет фона области, где находится полоса прокрутки */
+    ::-webkit-scrollbar-track {
+      background-color: #979797; /* Серый фон */
+      border-radius: 5px;
+    }
+
+    /* Стилевое оформление самой ползунки */
+    ::-webkit-scrollbar-thumb {
+      background-color: #333; /* Темный цвет ползунка */
+      border-radius: 30px; /* Скругление углов */
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: #555;
+    }
+  </style>
+
+  <body>
     <h1>Чат</h1>
 
     <p>
-    <input type="checkbox" name="switcher" id="switcher-input" class="switcher-input">
-    <img src="/static/MaxwellIdle.gif" width="25"/>
+      <input
+        type="checkbox"
+        name="switcher"
+        id="switcher-input"
+        class="switcher-input"
+      />
+      <img src="/static/MaxwellIdle.gif" width="25" />
     </p>
 
     <label class="switcher-label" for="switcher-input">
-        <i class='fas fa-solid fa-moon'></i>
-        <span class="switcher-toggler"></span>
-        <i class='fas fa-solid fa-sun'></i>
+      <i class="fas fa-solid fa-moon"></i>
+      <span class="switcher-toggler"></span>
+      <i class="fas fa-solid fa-sun"></i>
     </label>
 
     <div id="messages"></div>
     <div id="error-message"></div>
+
     <form id="messageForm" onsubmit="sendMessage(event)">
-        <input type="text" id="name" placeholder="Ваше имя" required>
-        <input type="text" id="message" placeholder="Ваше сообщение" required autocomplete="off">
-        <button type="submit">Send</button>        
-        <img src="/static/pa6v03g1glo91.gif" width="25" />
+      <input type="text" id="name" placeholder="Ваше имя" required />
+      <input
+        type="text"
+        id="message"
+        placeholder="Ваше сообщение"
+        required
+        autocomplete="off"
+      />
+      <button type="submit">Send</button>
+      <img src="/static/pa6v03g1glo91.gif" width="25" />
     </form>
+
     <button id="notificationToggle">Disable notifications</button>
     <div id="drop_zone">Drop files here</div>
-    <button id="returnButton" onclick="location.href='/'">Return to Main Page</button>
+    <button id="returnButton" onclick="location.href='/'">
+      Return to Main Page
+    </button>
+
     <script>
-        const inputCheckbox = window.document.querySelector('.switcher-input'); 
-    const documentBody = document.body;
-    
-    //events
-    inputCheckbox.addEventListener('change', () => {
-        let theme = getTheme(); 
-    
-        if(theme == 'dark') {
-            setTheme('light');
+      const inputCheckbox = window.document.querySelector(".switcher-input");
+      const documentBody = document.body;
+
+      //events
+      inputCheckbox.addEventListener("change", () => {
+        let theme = getTheme();
+
+        if (theme == "dark") {
+          setTheme("light");
         } else {
-            setTheme('dark');
+          setTheme("dark");
         }
-    }); 
-    
-    
-    //functions
-    function changeBackground () {
-        let theme = getTheme(); 
-    
-        if(theme == 'dark') {
-            documentBody.classList.add('active'); 
+      });
+
+      //functions
+      function changeBackground() {
+        let theme = getTheme();
+
+        if (theme == "dark") {
+          documentBody.classList.add("active");
         } else {
-            documentBody.classList.remove('active');
+          documentBody.classList.remove("active");
         }
-    }
-    
-    function checkTheme() {
-        let theme = getTheme(); 
-        if(theme == null || theme == undefined || typeof(theme) != 'string') {
-            setTheme('light');
+      }
+
+      function checkTheme() {
+        let theme = getTheme();
+        if (theme == null || theme == undefined || typeof theme != "string") {
+          setTheme("light");
         } else {
-            if(theme == 'dark') {
-                setTheme('dark');
-            } else {
-                setTheme('light');
-            }
+          if (theme == "dark") {
+            setTheme("dark");
+          } else {
+            setTheme("light");
+          }
         }
-    }
-    
-    function setTheme(theme = 'light') {
-        window.localStorage.setItem('theme', theme); 
-        changeBackground(); 
+      }
 
-    }
-    
-    function getTheme(){
-        return window.localStorage.getItem('theme'); 
-    }
-    
-    checkTheme(); 
+      function setTheme(theme = "light") {
+        window.localStorage.setItem("theme", theme);
+        changeBackground();
+      }
 
+      function getTheme() {
+        return window.localStorage.getItem("theme");
+      }
+      checkTheme();
 
-        function handleError(error) {
-            const errorMessageDiv = document.getElementById('error-message');
-            errorMessageDiv.textContent = error; // Set the error message
-            errorMessageDiv.style.display = 'block'; // Show the error message
+      function handleError(error) {
+        const errorMessageDiv = document.getElementById("error-message");
+        errorMessageDiv.textContent = error; // Set the error message
+        errorMessageDiv.style.display = "block"; // Show the error message
 
-            // Hide the message after 3 seconds
-            setTimeout(() => {
-                errorMessageDiv.style.display = 'none';
-            }, 3000);
+        // Hide the message after 3 seconds
+        setTimeout(() => {
+          errorMessageDiv.style.display = "none";
+        }, 3000);
+      }
+      const socket = io(); // Подключаемся к WebSocket серверу
+      let notificationsEnabled = true; // Переменная для отслеживания состояния уведомлений
+      // Загрузка истории сообщений при загрузке страницы
+      document.addEventListener("DOMContentLoaded", loadChatHistory);
+
+      function renderMessage(data) {
+        const messagesDiv = document.getElementById("messages");
+        const messageElement = document.createElement("div");
+
+        // Check if unique_id is present
+        if (data.unique_id) {
+          const originalFilename = data.message; // Assuming message contains original filename
+          const fileExtension = originalFilename.split(".").pop().toLowerCase(); // Get file extension
+
+          // Create a link for downloading the file
+          const fileLink = `<a href="/download/${data.unique_id}" target="_blank">${originalFilename}</a>`;
+          messageElement.innerHTML = `${data.name}: ${fileLink}`;
+        } else {
+          messageElement.textContent = `${data.name}: ${data.message}`;
         }
-        const socket = io(); // Подключаемся к WebSocket серверу
-        let notificationsEnabled = true; // Переменная для отслеживания состояния уведомлений
-        // Загрузка истории сообщений при загрузке страницы
-        document.addEventListener('DOMContentLoaded', loadChatHistory);
-        
-        function renderMessage(data) {
-            const messagesDiv = document.getElementById('messages');
-            const messageElement = document.createElement('div');
 
-            // Check if unique_id is present
-            if (data.unique_id) {
-                const originalFilename = data.message; // Assuming message contains original filename
-                const fileExtension = originalFilename.split('.').pop().toLowerCase(); // Get file extension
+        messagesDiv.appendChild(messageElement);
+      }
 
-                // Create a link for downloading the file
-                const fileLink = `<a href="/download/${data.unique_id}" target="_blank">${originalFilename}</a>`;
-                messageElement.innerHTML = `${data.name}: ${fileLink}`;
-            } else {
-                messageElement.textContent = `${data.name}: ${data.message}`;
-            }
+      function loadChatHistory() {
+        fetch("/chat_history")
+          .then((response) => response.json())
+          .then((data) => {
+            const messagesDiv = document.getElementById("messages");
+            messagesDiv.innerHTML = ""; // Clear existing messages
 
-            messagesDiv.appendChild(messageElement);
-        }
-        
-        function loadChatHistory() {
-            fetch('/chat_history')
-                .then(response => response.json())
-                .then(data => {
-                    const messagesDiv = document.getElementById('messages');
-                    messagesDiv.innerHTML = ''; // Clear existing messages
-                
-                    data.messages.forEach(msg => {
-                        renderMessage({ name: msg.name, message: msg.message, unique_id: msg.unique_id }); // Call render function for each message
-                    });
-                    messagesDiv.scrollTop = messagesDiv.scrollHeight; // Прокручиваем вниз к последнему сообщению
-                })
-                .catch(error => console.error('Error loading chat history:', error));
-        }
-        
-        socket.on('receive_message', function(data) {
-            renderMessage(data);
-            messagesDiv = document.getElementById('messages');
-            messagesDiv.scrollTop = messagesDiv.scrollHeight; // Прокручиваем вниз к последнему сообщению
-            // Показываем уведомление, если они включены
-            if (notificationsEnabled && data.name !== userName) {
-                    showNotification(data.name, data.message);
-                    playNotificationSound();
-                }
+            data.messages.forEach((msg) => {
+              renderMessage({
+                name: msg.name,
+                message: msg.message,
+                unique_id: msg.unique_id,
+              }); // Call render function for each message
             });
-        function playNotificationSound() {
-            const notificationSound = document.getElementById('notificationSound');
-            notificationSound.currentTime = 0; // Сбрасываем время воспроизведения
-            notificationSound.play(); // Воспроизводим звук
-        }
-        function showNotification(name, message) {
-            if (Notification.permission === "granted") {
-                new Notification(`${name} написал:`, { body: message });
-            } else if (Notification.permission !== "denied") {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        new Notification(`${name} написал:`, { body: message });
-                    }
-                });
-            }
-        }
-
-        function sendMessage(event) {
-            event.preventDefault();
-            userName = document.getElementById('name').value; // Сохраняем имя пользователя
-            message = document.getElementById('message').value;
-            
-            socket.emit('send_message', { name: userName, message: message, channel:-1, external:false}); // Отправляем сообщение на сервер
-
-            document.getElementById('message').value = ''; // Очищаем поле сообщения
-            messagesDiv = document.getElementById('messages');
             messagesDiv.scrollTop = messagesDiv.scrollHeight; // Прокручиваем вниз к последнему сообщению
+          })
+          .catch((error) =>
+            console.error("Error loading chat history:", error)
+          );
+      }
+
+      socket.on("receive_message", function (data) {
+        renderMessage(data);
+        messagesDiv = document.getElementById("messages");
+        messagesDiv.scrollTop = messagesDiv.scrollHeight; // Прокручиваем вниз к последнему сообщению
+        // Показываем уведомление, если они включены
+        if (notificationsEnabled && data.name !== userName) {
+          showNotification(data.name, data.message);
+          playNotificationSound();
         }
-        document.getElementById('notificationToggle').addEventListener('click', function() {
-            notificationsEnabled = !notificationsEnabled; // Переключаем состояние уведомлений
-            this.textContent = notificationsEnabled ? 'Disable notifications' : 'Enable notifications'; // Обновляем текст кнопки
-        });
-        const dropZone = document.getElementById('drop_zone');
-
-        dropZone.addEventListener('dragover', (event) => {
-            event.preventDefault();
-            dropZone.style.borderColor = '#00a500';
-        });
-
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.style.borderColor = '#ccc';
-        });
-
-        dropZone.addEventListener('drop', (event) => {
-            event.preventDefault();
-            name = document.getElementById('name').value
-            dropZone.style.borderColor = '#ccc';
-            const files = event.dataTransfer.files;
-            uploadFiles(files,name);
-        });
-
-        function uploadFiles(files,name) {
-            const formData = new FormData();
-            for (let i = 0; i < files.length; i++) {
-                formData.append('file', files[i]);
+      });
+      function playNotificationSound() {
+        const notificationSound = document.getElementById("notificationSound");
+        notificationSound.currentTime = 0; // Сбрасываем время воспроизведения
+        notificationSound.play(); // Воспроизводим звук
+      }
+      function showNotification(name, message) {
+        if (Notification.permission === "granted") {
+          new Notification(`${name} написал:`, { body: message });
+        } else if (Notification.permission !== "denied") {
+          Notification.requestPermission().then((permission) => {
+            if (permission === "granted") {
+              new Notification(`${name} написал:`, { body: message });
             }
-
-            fetch('/upload', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(data => {
-                        throw new Error(data.error); // Generate an error with the message from the response
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    // Notify all clients about the new file with original filename and unique ID
-                    socket.emit('send_message', { 
-                        name: name, 
-                        message: data.original_filename, 
-                        unique_id: data.unique_id,
-                        channel: -1,
-                        external: false
-                    });
-                }
-            })
-            .catch(error => handleError(error.message)); // Handle error
+          });
         }
+      }
+
+      function sendMessage(event) {
+        event.preventDefault();
+        userName = document.getElementById("name").value; // Сохраняем имя пользователя
+        message = document.getElementById("message").value;
+
+        socket.emit("send_message", {
+          name: userName,
+          message: message,
+          channel: -1,
+          external: false,
+        }); // Отправляем сообщение на сервер
+
+        document.getElementById("message").value = ""; // Очищаем поле сообщения
+        messagesDiv = document.getElementById("messages");
+        messagesDiv.scrollTop = messagesDiv.scrollHeight; // Прокручиваем вниз к последнему сообщению
+      }
+      document
+        .getElementById("notificationToggle")
+        .addEventListener("click", function () {
+          notificationsEnabled = !notificationsEnabled; // Переключаем состояние уведомлений
+          this.textContent = notificationsEnabled
+            ? "Disable notifications"
+            : "Enable notifications"; // Обновляем текст кнопки
+        });
+      const dropZone = document.getElementById("drop_zone");
+
+      dropZone.addEventListener("dragover", (event) => {
+        event.preventDefault();
+        dropZone.style.borderColor = "#00a500";
+      });
+
+      dropZone.addEventListener("dragleave", () => {
+        dropZone.style.borderColor = "#ccc";
+      });
+
+      dropZone.addEventListener("drop", (event) => {
+        event.preventDefault();
+        name = document.getElementById("name").value;
+        dropZone.style.borderColor = "#ccc";
+        const files = event.dataTransfer.files;
+        uploadFiles(files, name);
+      });
+
+      function uploadFiles(files, name) {
+        const formData = new FormData();
+        for (let i = 0; i < files.length; i++) {
+          formData.append("file", files[i]);
+        }
+
+        fetch("/upload", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => {
+            if (!response.ok) {
+              return response.json().then((data) => {
+                throw new Error(data.error); // Generate an error with the message from the response
+              });
+            }
+            return response.json();
+          })
+          .then((data) => {
+            if (data.success) {
+              // Notify all clients about the new file with original filename and unique ID
+              socket.emit("send_message", {
+                name: name,
+                message: data.original_filename,
+                unique_id: data.unique_id,
+                channel: -1,
+                external: false,
+              });
+            }
+          })
+          .catch((error) => handleError(error.message)); // Handle error
+      }
     </script>
-</body>
+  </body>
 </html>
