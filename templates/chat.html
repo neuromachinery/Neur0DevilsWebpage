@@ -273,6 +273,15 @@
     ::-webkit-scrollbar-thumb:hover {
       background-color: #555;
     }
+
+    #name {
+      width: 20%;
+      margin-right: 5px;
+    }
+
+    #notificationToggle {
+      width: 20%;
+    }
   </style>
 
   <body>
@@ -298,7 +307,7 @@
     <div id="error-message"></div>
 
     <form id="messageForm" onsubmit="sendMessage(event)">
-      <input type="text" id="name" placeholder="Ваше имя" required />
+      <input id="name" placeholder="Ваше имя" required />
       <input
         type="text"
         id="message"
