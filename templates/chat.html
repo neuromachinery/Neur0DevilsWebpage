@@ -307,13 +307,18 @@
     <div id="error-message"></div>
 
     <form id="messageForm" onsubmit="sendMessage(event)">
-      <input id="name" placeholder="Ваше имя" required />
+      <input 
+        id="name" 
+        placeholder="Ваше имя" 
+        required 
+        maxlength="40"/>
       <input
         type="text"
         id="message"
         placeholder="Ваше сообщение"
         required
         autocomplete="off"
+        maxlength="4000"
       />
       <button type="submit">Send</button>
       <img src="/static/pa6v03g1glo91.gif" width="25" />
