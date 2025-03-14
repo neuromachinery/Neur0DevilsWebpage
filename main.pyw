@@ -37,6 +37,7 @@ LogsTable = "LogsSite"
 ChatTable = "ChatSite"
 FileTable = "FilenamesSite"
 MiscTable = "LogsMisc"
+DropTable = "DROPTABLE"
 Temp = "Temp"
 CWD = path.dirname(path.realpath(__file__))
 chdir(CWD)
@@ -116,8 +117,8 @@ def chat():
     return render_template('chat.html')
 @socketio.on('send_message')
 def handle_send_message(data):
-    name = data['name']
-    message = data['message']
+    name = data['name'][:40]
+    message = data['message'][:1000]
     channel = data['channel']
     file_id = data['unique_id'] if 'unique_id' in data else None
     external = bool(data['external']) if 'external' in data else False
@@ -179,6 +180,25 @@ def download_file(unique_id):
     #print(data[0][1])
     original_filename = data[0][1]
     return send_from_directory(app.config['UPLOAD_FOLDER'], unique_id, as_attachment=True,download_name=original_filename)
+@app.route('/make_drop')
+def make_drop():
+    str(uuid4())
+    return render_template('make_drop.html')
+@app.route('/get_drop/<unique_id>')
+def get_drop(unique_id):
+    #print(f"{unique_id} -> ",end="")
+    SEND(ADDRESS_DICT["DB"],sender_name="SITE", target_name="DB",message_type="GET", message=(DropTable, "UUID", unique_id))
+    try:
+        data = RECIEVE()["message"]
+    except ConnectionError:
+        return jsonify({'error': 'Database unresponsive'}), 500
+    sleep(0.17)
+    if not data:
+        return jsonify({'error': 'Drop not found'}), 404
+    if not data[0][-1]: #not already used
+        drop = data[0][1]
+        return render_template('drop.html',drop_data=drop)
+    return jsonify({'error': 'Drop has expired after 1 use'}), 403
 @app.route('/about')
 def about():
     return render_template('about.html')
