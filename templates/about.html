@@ -196,6 +196,7 @@
     #Telegram {
       border-radius: 25px;
       padding: 5px 5px 5px 5px;
+      font-size: large;
     }
 
     button > img,
@@ -206,9 +207,21 @@
     #Discord {
       border-radius: 25px;
       padding: 5px 15px 0px 1px;
+      font-size: large;
     }
 
     #DiscordImg {
+      border-radius: 25px;
+      padding-bottom: 0px;
+    }
+
+    #TeamSpeak {
+      border-radius: 30px;
+      padding: 5px 15px 5px 1px;
+      font-size: large;
+    }
+
+    #TeamSpeakImg {
       border-radius: 25px;
       padding-bottom: 0px;
     }
@@ -251,6 +264,7 @@
       color: #fff;
       background-color: #000000;
       text-align: center;
+      font-size: large;
     }
 
     #GitHubImg {
@@ -314,10 +328,10 @@
             </button>
           </li>
           <li>
-            <button id="copyButton" class="Mail" onclick="copyToClipboard()">
-              Mail: leshasgusch@gmail.com
+            <button id="TeamSpeak" onclick="location.href='https://tmspk.gg/tsySMBNw'">
+              <img id="TeamSpeakImg" src="/static/TeamGames.jpg" width="50" />
+              <span>TeamSpeak</span>
             </button>
-            <div class="copied-message" id="copiedMessage">Скопировано!</div>
           </li>
           <li>
             <button id="Telegram" onclick="location.href='tg://resolve?domain=Meme_Mailman_bot'">
@@ -330,6 +344,12 @@
               <img id="GitHubImg" src="/static/GithubIcon.png" width="25" />
               <span>GitHub</span>
             </button>
+          </li>
+          <li>
+            <button id="copyButton" class="Mail" onclick="copyToClipboard()">
+              Mail: leshasgusch@gmail.com
+            </button>
+            <div class="copied-message" id="copiedMessage">Скопировано!</div>
           </li>
         </ul>
       </div>
@@ -399,7 +419,7 @@
     function showLoadingPopup() {
       document.getElementById("loadingPopup").style.display = "block";
     }
-    
+
     function copyToClipboard() {
       var $temp = $("<input>");
       $("body").append($temp);
