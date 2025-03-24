@@ -28,7 +28,6 @@
       rel="stylesheet"
       href="https://use.fontawesome.com/releases/v6.3.0/css/all.css"
     />
-    <script src="https://cdn.socket.io/4.8.1/socket.io.esm.min.js"></script>
     <!-- Элемент для воспроизведения звука -->
     <audio id="notificationSound" src="static/ping.mp3" preload="auto"></audio>
   </head>
@@ -329,8 +328,9 @@
     <button id="returnButton" onclick="location.href='/'">
       Return to Main Page
     </button>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
     <script>
+      const socket = io("/chat")
       const inputCheckbox = window.document.querySelector(".switcher-input");
       const documentBody = document.body;
 
@@ -389,7 +389,6 @@
           errorMessageDiv.style.display = "none";
         }, 3000);
       }
-      const socket = io(); // Подключаемся к WebSocket серверу
       let notificationsEnabled = true; // Переменная для отслеживания состояния уведомлений
       // Загрузка истории сообщений при загрузке страницы
       document.addEventListener("DOMContentLoaded", loadChatHistory);
