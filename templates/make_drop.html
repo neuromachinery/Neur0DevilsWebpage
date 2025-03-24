@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make Single-Use Drop Data</title>
+    <style>
+        /* Общий стиль для всей страницы */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Контейнер формы */
+        #dropForm {
+            background-color: #ffffff;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        /* Поле ввода */
+        input[type="text"], input[type="number"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        /* Кнопка отправки */
+        #SendButton {
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        /* Стили кнопки при наведении */
+        #SendButton:hover {
+            background-color: #0056b3;
+        }
+
+        /* Стили кнопки при отключении */
+        #SendButton[disabled] {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <form id="dropForm" onsubmit="make_drop(event)">
+        <input
+          type="text"
+          id="dropdata"
+          placeholder="Введите ваш дроп"
+          required
+          autocomplete="off"
+        />
+        <input
+          type="number"
+          id="usageCount"
+          placeholder="Количество использований"
+          required
+          min="1"
+          value="1"
+        />
+        <button id="SendButton">Отправить</button>
+    </form>
+</body>
+<script type="module">
+  import { io } from "https://cdn.socket.io/4.8.1/socket.io.esm.min.js";
+
+  const socket = io("/make_drop");
+  
+  // Определяем функцию make_drop в глобальной области
+  window.make_drop = function (event) {
+    document.getElementById("SendButton").disabled = true; // Отключаем кнопку отправки
+    event.preventDefault();
+
+    const dropData = document.getElementById("dropdata").value; // Получаем данные дропа
+    const usageCount = parseInt(document.getElementById("usageCount").value, 10); // Получаем количество использований
+
+    socket.emit("drop_propose", {
+      drop_data: dropData,
+      usage_count: usageCount, // Передаем количество использований в emit
+    }); // Отправляем сообщение на сервер
+  };
+  
+  socket.on("drop_confirmed", function (data) {
+      const input = document.getElementById("dropdata");
+      const urlString = document.URL;
+      const [protocol, rest] = urlString.split("://");
+      const [hostname, pathAndQuery] = rest.split("/");
+      input.value = data["unique_id"]; // Очищаем поле сообщения
+      
+      // Выделяем текстовое поле
+      input.select();
+      input.setSelectionRange(0, 99999); // Для мобильных устройств
+    
+      // Копируем текст внутри текстового поля
+      navigator.clipboard.writeText(`${protocol}://${hostname}/get_drop/${data["unique_id"]}`);
+    
+      // Показываем уведомление о скопированном тексте
+      alert("Copied dropway: " + `${protocol}://${hostname}/get_drop/${data["unique_id"]}`);
+      document.getElementById("SendButton").disabled = false; // Включаем кнопку отправки
+  });
+</script>
+
+</html>

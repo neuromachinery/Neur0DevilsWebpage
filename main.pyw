@@ -37,7 +37,8 @@ LogsTable = "LogsSite"
 ChatTable = "ChatSite"
 FileTable = "FilenamesSite"
 MiscTable = "LogsMisc"
-DropTable = "DROPTABLE"
+DropTable = "dropTable"
+DropUsageTable= "dropUsage"
 Temp = "Temp"
 CWD = path.dirname(path.realpath(__file__))
 chdir(CWD)
@@ -115,7 +116,7 @@ def serve_main_page():
 @app.route('/chat')
 def chat():
     return render_template('chat.html')
-@socketio.on('send_message')
+@socketio.on('send_message',namespace="/chat")
 def handle_send_message(data):
     name = data['name'][:40]
     message = data['message'][:1000]
@@ -131,7 +132,8 @@ def handle_send_message(data):
     timestamp = now()  # Получаем текущее время
     log_entry = (name, ip_address, message, timestamp,file_id)
     # Отправляем сообщение через SEND
-    SEND(ADDRESS_DICT["DB"],sender_name="SITE",target_name="DB", message_type="LOG", message=(ChatTable, log_entry))    
+    if not SEND(ADDRESS_DICT["DB"],sender_name="SITE",target_name="DB", message_type="LOG", message=(ChatTable, log_entry)):
+        raise ValueError
     # Рассылаем сообщение всем подключенным клиентам
     emit('receive_message', {'name': name, 'time':timestamp, 'message': message, 'unique_id': file_id, "channel": channel,"external": external}, broadcast=True)
 @app.route('/chat_history')
@@ -140,6 +142,8 @@ def chat_history():
     try:return jsonify(messages=[{'name': msg[0],'ip':msg[1], 'message': msg[2],'time':msg[3],'unique_id': msg[4]} for msg in messages])
     except IndexError as E:
         print(format_exc(),str(E),messages)
+    except TypeError as E:
+        ExceptionHandler(E)
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
@@ -180,25 +184,33 @@ def download_file(unique_id):
     #print(data[0][1])
     original_filename = data[0][1]
     return send_from_directory(app.config['UPLOAD_FOLDER'], unique_id, as_attachment=True,download_name=original_filename)
-@app.route('/make_drop')
+@app.route('/make_drop/')
 def make_drop():
-    str(uuid4())
     return render_template('make_drop.html')
+@socketio.on('drop_propose',namespace="/make_drop")
+def handle_make_drop(data):
+
+    unique_id=str(uuid4())
+    SEND(ADDRESS_DICT["DB"],sender_name="SITE", target_name="DB",message_type="LOG", message=(DropTable, (unique_id,data["drop_data"],data["usage_count"])))
+    emit('drop_confirmed',{"unique_id":unique_id},namespace="/make_drop")
 @app.route('/get_drop/<unique_id>')
 def get_drop(unique_id):
     #print(f"{unique_id} -> ",end="")
-    SEND(ADDRESS_DICT["DB"],sender_name="SITE", target_name="DB",message_type="GET", message=(DropTable, "UUID", unique_id))
     try:
+        SEND(ADDRESS_DICT["DB"],sender_name="SITE", target_name="DB",message_type="GET", message=(DropTable, "UUID", unique_id))
         data = RECIEVE()["message"]
+        if not data:
+            return jsonify({'error': 'Drop not found'}), 404
+        SEND(ADDRESS_DICT["DB"],sender_name="SITE", target_name="DB",message_type="CNT", message=(DropUsageTable, "UUID", unique_id))
+        used = RECIEVE()["message"]
+        _,drop,uses = data[0]
     except ConnectionError:
         return jsonify({'error': 'Database unresponsive'}), 500
-    sleep(0.17)
-    if not data:
-        return jsonify({'error': 'Drop not found'}), 404
-    if not data[0][-1]: #not already used
-        drop = data[0][1]
-        return render_template('drop.html',drop_data=drop)
-    return jsonify({'error': 'Drop has expired after 1 use'}), 403
+    if used<uses:
+        log_entry = (unique_id,now(),request.remote_addr)
+        SEND(ADDRESS_DICT["DB"],sender_name="SITE", target_name="DB",message_type="LOG", message=(DropUsageTable, log_entry))
+        return render_template('drop.html',drop_data=drop,uses=uses-used-1)
+    return render_template("drop_exhausted.html",max_usage=uses)
 @app.route('/about')
 def about():
     return render_template('about.html')
@@ -247,8 +259,8 @@ def log_request(response):
     )
     SEND(ADDRESS_DICT["DB"],sender_name="SITE", target_name="DB",message_type="LOG", message=(LogsTable, message))
     return response
-def ExceptionHandler(exception:Exception):
-    exception_formatted = f"{exception}; {format_exc()}; {type(exception)}"
+def ExceptionHandler(exception:Exception,*args):
+    exception_formatted = f"{exception}; {format_exc()}; {type(exception)}; args:{args}"
     print(exception_formatted)
     date = now()
     SEND(
