@@ -110,10 +110,9 @@
       // Выделяем текстовое поле
       input.select();
       input.setSelectionRange(0, 99999); // Для мобильных устройств
-    
-      // Копируем текст внутри текстового поля
-      navigator.clipboard.writeText(`${protocol}://${hostname}/get_drop/${data["unique_id"]}`);
-    
+      if (window.isSecureContext) {
+        navigator.clipboard.writeText(`${protocol}://${hostname}/get_drop/${data["unique_id"]}`);
+      }
       // Показываем уведомление о скопированном тексте
       alert("Copied dropway: " + `${protocol}://${hostname}/get_drop/${data["unique_id"]}`);
       document.getElementById("SendButton").disabled = false; // Включаем кнопку отправки
