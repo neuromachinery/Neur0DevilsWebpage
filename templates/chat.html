@@ -441,38 +441,76 @@
           }
         }
       }     
-      async function handleFileClick(url, filename) {
-        // Fetch file as blob
-        const response = await fetch(url);
-        if (!response.ok) {
-          // File not found or server error
-          alert('File not found!');
-          return;
+      function handleFileClick(url, filename, progressId) {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.responseType = 'blob';
+
+        xhr.onprogress = function(event) {
+          if (event.lengthComputable) {
+            const percent = Math.floor((event.loaded / event.total) * 100);
+            document.getElementById(progressId).textContent = percent + '%';
+          }
+        };
+      
+        xhr.onload = function() {
+          if (xhr.status === 200) {
+            document.getElementById(progressId).textContent = ''; // Clear progress
+            const blob = xhr.response;
+            const objectUrl = URL.createObjectURL(blob);
+          
+            // Display or download the file as before
+            if (filename.match(/\.(jpg|jpeg|png|gif)$/i)) {
+              showOverlay(objectUrl, filename);
+            } else if (filename.match(/\.(mp4|webm|ogg)$/i)) {
+              showOverlay(objectUrl, filename);
+            } else {
+              // Fallback: trigger download
+              const a = document.createElement('a');
+              a.href = objectUrl;
+              a.download = filename;
+              a.style.display = 'none';
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              URL.revokeObjectURL(objectUrl);
+            }
+          } else {
+            document.getElementById(progressId).textContent = 'Error';
+            alert('Download failed');
+          }
+        };
+      
+        xhr.onerror = function() {
+          document.getElementById(progressId).textContent = 'Error';
+          alert('Download failed');
+        };
+
+          xhr.send();
         }
-        const blob = await response.blob();
-        const objectUrl = URL.createObjectURL(blob);
-        showOverlay(objectUrl, filename);
-      }
        function renderMessage(data) {
-         const messagesDiv = document.getElementById("messages");
-         const messageElement = document.createElement("div");
-         // Compute color for username
-         const nameColor = stringToColor(data.name);
-         // Create a span for the colored username
-         const nameSpan = `<span style="color: ${nameColor}; font-weight: bold;">${data.name}</span>`;
-         if (data.unique_id) {
-           const originalFilename = data.message;
-           const fileLink = `<a href="#" 
-             onclick="handleFileClick('/download/${data.unique_id}', '${originalFilename}')">
-             ${originalFilename}
-           </a>`;
-           messageElement.innerHTML = `${nameSpan}: ${fileLink}`;
-         } else {
-           messageElement.innerHTML = `${nameSpan}: ${data.message}`;
-         }
-       
-         messagesDiv.appendChild(messageElement);
-       }
+          const messagesDiv = document.getElementById("messages");
+          const messageElement = document.createElement("div");
+              
+          const nameColor = stringToColor(data.name);
+          const nameSpan = `<span style="color: ${nameColor}; font-weight: bold;">${data.name}</span>`;
+              
+          if (data.unique_id) {
+            const originalFilename = data.message;
+            const progressId = `progress-${data.unique_id}`;
+            const fileLink = `<a href="#" 
+              onclick="handleFileClick('/download/${data.unique_id}', '${originalFilename}', '${progressId}')">
+              ${originalFilename}
+            </a>`;
+            // Add the progress span just after the link
+            messageElement.innerHTML = `${nameSpan}: ${fileLink} <span id="${progressId}" style="margin-left:8px;"></span>`;
+          } else {
+            messageElement.innerHTML = `${nameSpan}: ${data.message}`;
+          }
+        
+          messagesDiv.appendChild(messageElement);
+        }
+        
 
       function loadChatHistory() {
         fetch("/chat_history")
