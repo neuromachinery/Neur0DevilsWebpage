@@ -103,7 +103,10 @@ def serve_main_page():
     with open('templates/main.html', 'r', encoding='utf-8') as file:
         html_content = file.read()
 
-    items = listdir(SHARED_FOLDER)
+    try:items = listdir(SHARED_FOLDER)
+    except FileNotFoundError:
+        mkdir(SHARED_FOLDER)
+        items = listdir(SHARED_FOLDER)
     item_links = ''.join(
         create_link(item) for item in items if path.exists(path.join(SHARED_FOLDER, item))
     )
@@ -301,7 +304,8 @@ class NetPort():
             ExceptionHandler(E)
 if __name__ == "__main__":
     clean_uploads_folder()
-    while True:
+    work=True
+    while work:
         try:
             @socketio.on_error()
             def error_handler(E):
@@ -310,6 +314,12 @@ if __name__ == "__main__":
             def handle_disconnect():pass
             NetPort().run()
             socketio.run(app,host="0.0.0.0", port=EXT_PORT, debug=False,allow_unsafe_werkzeug=True)
-        except KeyboardInterrupt:quit()
+            quit()
+            
+        except KeyboardInterrupt as E:
+            ExceptionHandler(E)
+            socketio.stop()
+            work=False
         except Exception as E:
             ExceptionHandler(E)
+            socketio.stop()

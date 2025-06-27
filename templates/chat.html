@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+# Apache .htaccess example (for static files)
+
+
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
@@ -46,7 +49,9 @@
 
     :root {
       --dark: #292c35;
+      --drop-dark: #393c46;
       --light: #f1f1f1;
+      --drop-light: #cecece;
       --label: #000000;
     }
 
@@ -102,8 +107,9 @@
     }
 
     .active #drop_zone {
-      border: 2px dashed #ffffff;
-      color: #ffffff;
+      border: 2px dashed var(--light);
+      color: var(--light);
+      background-color: var(--drop-dark);
       padding-top: 5px;
       border-radius: 10px;
       width: 300px;
@@ -153,9 +159,10 @@
       transition: background-color 0.5s ease;
       border-radius: 5px;
     }
-
+    
     #drop_zone {
-      border: 2px dashed #000000;
+      border: 2px dashed var(--dark);
+      background-color: var(--drop-light);
       padding-top: 5px;
       border-radius: 10px;
       width: 300px;
@@ -164,7 +171,7 @@
       transition: background-color 0.5s ease;
       margin: 10px auto;
     }
-
+    
     #messageForm {
       display: flex;
     }
@@ -328,6 +335,9 @@
     <button id="returnButton" onclick="location.href='/'">
       Return to Main Page
     </button>
+    <div id="media-overlay" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.8);justify-content:center;align-items:center;z-index:9999;">
+      <div id="media-content" style="position:relative;"></div>
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
     <script>
       const socket = io("/chat")
@@ -344,6 +354,7 @@
           setTheme("dark");
         }
       });
+
 
       //functions
       function changeBackground() {
@@ -392,25 +403,76 @@
       let notificationsEnabled = true; // Переменная для отслеживания состояния уведомлений
       // Загрузка истории сообщений при загрузке страницы
       document.addEventListener("DOMContentLoaded", loadChatHistory);
-
-      function renderMessage(data) {
-        const messagesDiv = document.getElementById("messages");
-        const messageElement = document.createElement("div");
-
-        // Check if unique_id is present
-        if (data.unique_id) {
-          const originalFilename = data.message; // Assuming message contains original filename
-          const fileExtension = originalFilename.split(".").pop().toLowerCase(); // Get file extension
-
-          // Create a link for downloading the file
-          const fileLink = `<a href="/download/${data.unique_id}" target="_blank">${originalFilename}</a>`;
-          messageElement.innerHTML = `${data.name}: ${fileLink}`;
+      function showOverlay(objectUrl, filename) {
+        const overlay = document.getElementById('media-overlay');
+        const content = document.getElementById('media-content');
+        content.innerHTML = ''; // Clear previous
+      
+        let element;
+        if (filename.match(/\.(jpg|jpeg|png|gif)$/i)) {
+          element = document.createElement('img');
+          element.src = objectUrl;
+          element.style.maxWidth = '90vw';
+          element.style.maxHeight = '90vh';
+        } else if (filename.match(/\.(mp4|webm|ogg)$/i)) {
+          element = document.createElement('video');
+          element.src = objectUrl;
+          element.controls = true;
+          element.autoplay = true;
+          element.style.maxWidth = '90vw';
+          element.style.maxHeight = '90vh';
         } else {
-          messageElement.textContent = `${data.name}: ${data.message}`;
+          // Fallback to download for unsupported types
+          const a = document.createElement('a');
+          a.href = objectUrl;
+          a.download = filename;
+          a.click();
         }
-
-        messagesDiv.appendChild(messageElement);
+        content.appendChild(element);
+      
+        overlay.style.display = 'flex';
+      
+        // Close overlay when clicking outside the content
+        overlay.onclick = function(e) {
+          if (e.target === overlay) {
+            overlay.style.display = 'none';
+            content.innerHTML = '';
+            URL.revokeObjectURL(objectUrl); // Clean up
+          }
+        }
+      }     
+      async function handleFileClick(url, filename) {
+        // Fetch file as blob
+        const response = await fetch(url);
+        if (!response.ok) {
+          // File not found or server error
+          alert('File not found!');
+          return;
+        }
+        const blob = await response.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        showOverlay(objectUrl, filename);
       }
+       function renderMessage(data) {
+         const messagesDiv = document.getElementById("messages");
+         const messageElement = document.createElement("div");
+         // Compute color for username
+         const nameColor = stringToColor(data.name);
+         // Create a span for the colored username
+         const nameSpan = `<span style="color: ${nameColor}; font-weight: bold;">${data.name}</span>`;
+         if (data.unique_id) {
+           const originalFilename = data.message;
+           const fileLink = `<a href="#" 
+             onclick="handleFileClick('/download/${data.unique_id}', '${originalFilename}')">
+             ${originalFilename}
+           </a>`;
+           messageElement.innerHTML = `${nameSpan}: ${fileLink}`;
+         } else {
+           messageElement.innerHTML = `${nameSpan}: ${data.message}`;
+         }
+       
+         messagesDiv.appendChild(messageElement);
+       }
 
       function loadChatHistory() {
         fetch("/chat_history")
@@ -502,28 +564,64 @@
         const files = event.dataTransfer.files;
         uploadFiles(files, name);
       });
-
+      function stringToColor(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+          hash = str.charCodeAt(i) + ((hash << 5) - hash);
+          hash = hash & hash; // Convert to 32bit integer
+        }
+        let color = '#';
+        for (let i = 0; i < 3; i++) {
+          // Extract 8 bits and convert to hex
+          const value = (hash >> (i * 8)) & 0xFF;
+          color += ('00' + value.toString(16)).slice(-2);
+        }
+        return color;
+      }
+      function lerpColor(a, b, t) {
+        // a and b are hex strings, t is 0..1
+        const ah = parseInt(a.replace('#',''),16),
+              bh = parseInt(b.replace('#',''),16),
+              ar = (ah >> 16) & 0xff, ag = (ah >> 8) & 0xff, ab = ah & 0xff,
+              br = (bh >> 16) & 0xff, bg = (bh >> 8) & 0xff, bb = bh & 0xff,
+              rr = ar + t * (br - ar),
+              rg = ag + t * (bg - ag),
+              rb = ab + t * (bb - ab);
+        return '#' + (((1 << 24) + (rr << 16) + (rg << 8) + (rb | 0)).toString(16).slice(1));
+      }
+      function updateDropZoneProgress(percent) {
+        // percent: 0.0 (start) to 1.0 (done)
+        const dropZone = document.getElementById('drop_zone');
+        const isDark = document.body.classList.contains('active');
+        // Light mode: from dark to light; Dark mode: from light to dark
+        const startBg = isDark ? '#393c46' : '#cecece';   // normal
+        const endBg = isDark ? '#cecece' : '#393c46'; // opposite of normal
+        const startBorder = isDark ? '#292c35' : '#f1f1f1';
+        const endBorder = isDark ? '#f1f1f1' : '#292c35';
+        dropZone.style.backgroundColor = lerpColor(startBg, endBg, percent);
+        dropZone.style.borderColor = lerpColor(startBorder, endBorder, percent);
+      }
       function uploadFiles(files, name) {
         const formData = new FormData();
         for (let i = 0; i < files.length; i++) {
           formData.append("file", files[i]);
         }
-
-        fetch("/upload", {
-          method: "POST",
-          body: formData,
-        })
-          .then((response) => {
-            if (!response.ok) {
-              return response.json().then((data) => {
-                throw new Error(data.error); // Generate an error with the message from the response
-              });
-            }
-            return response.json();
-          })
-          .then((data) => {
+      
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "/upload", true);
+      
+        xhr.upload.onprogress = function(event) {
+          if (event.lengthComputable) {
+            const percent = event.loaded / event.total;
+            updateDropZoneProgress(percent);
+          }
+        };
+      
+        xhr.onload = function() {
+          updateDropZoneProgress(0); // Ensure it's set to 100%
+          if (xhr.status === 200) {
+            const data = JSON.parse(xhr.responseText);
             if (data.success) {
-              // Notify all clients about the new file with original filename and unique ID
               socket.emit("send_message", {
                 name: name,
                 message: data.original_filename,
@@ -532,9 +630,28 @@
                 external: false,
               });
             }
-          })
-          .catch((error) => handleError(error.message)); // Handle error
+          } else {
+            const data = JSON.parse(xhr.responseText);
+            handleError(data.error);
+          }
+          setTimeout(() => updateDropZoneProgress(0), 500); // Reset after short delay
+        };
+      
+        xhr.onerror = function() {
+          handleError("Upload failed");
+          updateDropZoneProgress(0);
+        };
+      
+        xhr.send(formData);
       }
+
+// Example event binding
+document.getElementById('file-input').addEventListener('change', function(e) {
+  if (e.target.files.length) {
+    uploadFiles(e.target.files, 'YourName');
+  }
+});
+
     </script>
   </body>
 </html>
