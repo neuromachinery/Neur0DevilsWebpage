@@ -1,7 +1,4 @@
 <!DOCTYPE html>
-# Apache .htaccess example (for static files)
-
-
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
@@ -36,7 +33,7 @@
   </head>
   <style>
     @import url("https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c&display=swap");
-
+    
     h1 {
       font-family: "M PLUS Rounded 1c", serif;
       font-weight: 600;
@@ -55,19 +52,19 @@
       --label: #000000;
     }
 
-    /*reset styles*/
+    
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
-    /*change background*/
+    
     body.active {
       background-color: var(--dark);
     }
 
-    /*move toggler when input is checked*/
+    
     body.active .switcher-label .switcher-toggler {
       left: 56%;
     }
@@ -199,7 +196,7 @@
       background-color: #0056b3;
     }
 
-    /* Style for error message */
+    
     #error-message {
       position: fixed;
       top: 50%;
@@ -209,15 +206,15 @@
       color: white;
       padding: 15px;
       border-radius: 5px;
-      display: none; /* Initially hidden */
-      z-index: 1000; /* Ensure it appears above other content */
+      display: none; 
+      z-index: 1000; 
     }
 
     .media-preview {
-      max-height: 1.5em; /* Adjust this value based on your line height */
-      max-width: auto; /* Allow width to adjust automatically */
+      max-height: 1.5em; 
+      max-width: auto; 
       margin-left: 10px;
-      vertical-align: middle; /* Align vertically with text */
+      vertical-align: middle; 
     }
 
     .switcher-label {
@@ -234,7 +231,7 @@
       margin-bottom: 5px;
     }
 
-    /*toggler*/
+    
     .switcher-label .switcher-toggler {
       background-color: white;
       width: 25px;
@@ -247,7 +244,7 @@
       transition: all 0.5s ease;
     }
 
-    /*sun and moon images*/
+    
     .switcher-label i {
       font-size: 15px;
     }
@@ -261,19 +258,19 @@
     }
 
     ::-webkit-scrollbar {
-      width: 10px; /* Ширина скроллбара */
+      width: 10px; 
     }
 
-    /* Цвет фона области, где находится полоса прокрутки */
+    
     ::-webkit-scrollbar-track {
-      background-color: #979797; /* Серый фон */
+      background-color: #979797; 
       border-radius: 5px;
     }
 
-    /* Стилевое оформление самой ползунки */
+    
     ::-webkit-scrollbar-thumb {
-      background-color: #333; /* Темный цвет ползунка */
-      border-radius: 30px; /* Скругление углов */
+      background-color: #333; 
+      border-radius: 30px; 
     }
 
     ::-webkit-scrollbar-thumb:hover {
@@ -344,7 +341,7 @@
       const inputCheckbox = window.document.querySelector(".switcher-input");
       const documentBody = document.body;
 
-      //events
+      
       inputCheckbox.addEventListener("change", () => {
         let theme = getTheme();
 
@@ -356,7 +353,7 @@
       });
 
 
-      //functions
+      
       function changeBackground() {
         let theme = getTheme();
 
@@ -392,21 +389,21 @@
 
       function handleError(error) {
         const errorMessageDiv = document.getElementById("error-message");
-        errorMessageDiv.textContent = error; // Set the error message
-        errorMessageDiv.style.display = "block"; // Show the error message
+        errorMessageDiv.textContent = error; 
+        errorMessageDiv.style.display = "block"; 
 
-        // Hide the message after 3 seconds
+        
         setTimeout(() => {
           errorMessageDiv.style.display = "none";
         }, 3000);
       }
-      let notificationsEnabled = true; // Переменная для отслеживания состояния уведомлений
-      // Загрузка истории сообщений при загрузке страницы
+      let notificationsEnabled = true; 
+      
       document.addEventListener("DOMContentLoaded", loadChatHistory);
       function showOverlay(objectUrl, filename) {
         const overlay = document.getElementById('media-overlay');
         const content = document.getElementById('media-content');
-        content.innerHTML = ''; // Clear previous
+        content.innerHTML = ''; 
       
         let element;
         if (filename.match(/\.(jpg|jpeg|png|gif)$/i)) {
@@ -422,7 +419,7 @@
           element.style.maxWidth = '90vw';
           element.style.maxHeight = '90vh';
         } else {
-          // Fallback to download for unsupported types
+          
           const a = document.createElement('a');
           a.href = objectUrl;
           a.download = filename;
@@ -432,12 +429,12 @@
       
         overlay.style.display = 'flex';
       
-        // Close overlay when clicking outside the content
+        
         overlay.onclick = function(e) {
           if (e.target === overlay) {
             overlay.style.display = 'none';
             content.innerHTML = '';
-            URL.revokeObjectURL(objectUrl); // Clean up
+            URL.revokeObjectURL(objectUrl); 
           }
         }
       }     
@@ -455,17 +452,17 @@
       
         xhr.onload = function() {
           if (xhr.status === 200) {
-            document.getElementById(progressId).textContent = ''; // Clear progress
+            document.getElementById(progressId).textContent = ''; 
             const blob = xhr.response;
             const objectUrl = URL.createObjectURL(blob);
           
-            // Display or download the file as before
+            
             if (filename.match(/\.(jpg|jpeg|png|gif)$/i)) {
               showOverlay(objectUrl, filename);
             } else if (filename.match(/\.(mp4|webm|ogg)$/i)) {
               showOverlay(objectUrl, filename);
             } else {
-              // Fallback: trigger download
+              
               const a = document.createElement('a');
               a.href = objectUrl;
               a.download = filename;
@@ -491,10 +488,10 @@
        function renderMessage(data) {
           const messagesDiv = document.getElementById("messages");
           const messageElement = document.createElement("div");
-              
+
           const nameColor = stringToColor(data.name);
           const nameSpan = `<span style="color: ${nameColor}; font-weight: bold;">${data.name}</span>`;
-              
+
           if (data.unique_id) {
             const originalFilename = data.message;
             const progressId = `progress-${data.unique_id}`;
@@ -502,7 +499,7 @@
               onclick="handleFileClick('/download/${data.unique_id}', '${originalFilename}', '${progressId}')">
               ${originalFilename}
             </a>`;
-            // Add the progress span just after the link
+            
             messageElement.innerHTML = `${nameSpan}: ${fileLink} <span id="${progressId}" style="margin-left:8px;"></span>`;
           } else {
             messageElement.innerHTML = `${nameSpan}: ${data.message}`;
@@ -510,23 +507,23 @@
         
           messagesDiv.appendChild(messageElement);
         }
-        
+
 
       function loadChatHistory() {
         fetch("/chat_history")
           .then((response) => response.json())
           .then((data) => {
             const messagesDiv = document.getElementById("messages");
-            messagesDiv.innerHTML = ""; // Clear existing messages
+            messagesDiv.innerHTML = ""; 
 
             data.messages.forEach((msg) => {
               renderMessage({
                 name: msg.name,
                 message: msg.message,
                 unique_id: msg.unique_id,
-              }); // Call render function for each message
+              }); 
             });
-            messagesDiv.scrollTop = messagesDiv.scrollHeight; // Прокручиваем вниз к последнему сообщению
+            messagesDiv.scrollTop = messagesDiv.scrollHeight; 
           })
           .catch((error) =>
             console.error("Error loading chat history:", error)
@@ -536,8 +533,8 @@
       socket.on("receive_message", function (data) {
         renderMessage(data);
         messagesDiv = document.getElementById("messages");
-        messagesDiv.scrollTop = messagesDiv.scrollHeight; // Прокручиваем вниз к последнему сообщению
-        // Показываем уведомление, если они включены
+        messagesDiv.scrollTop = messagesDiv.scrollHeight; 
+        
         if (notificationsEnabled && data.name !== userName) {
           showNotification(data.name, data.message);
           playNotificationSound();
@@ -545,8 +542,8 @@
       });
       function playNotificationSound() {
         const notificationSound = document.getElementById("notificationSound");
-        notificationSound.currentTime = 0; // Сбрасываем время воспроизведения
-        notificationSound.play(); // Воспроизводим звук
+        notificationSound.currentTime = 0; 
+        notificationSound.play(); 
       }
       function showNotification(name, message) {
         if (Notification.permission === "granted") {
@@ -562,7 +559,7 @@
 
       function sendMessage(event) {
         event.preventDefault();
-        userName = document.getElementById("name").value; // Сохраняем имя пользователя
+        userName = document.getElementById("name").value; 
         message = document.getElementById("message").value;
 
         socket.emit("send_message", {
@@ -570,19 +567,19 @@
           message: message,
           channel: -1,
           external: false,
-        }); // Отправляем сообщение на сервер
+        }); 
 
-        document.getElementById("message").value = ""; // Очищаем поле сообщения
+        document.getElementById("message").value = ""; 
         messagesDiv = document.getElementById("messages");
-        messagesDiv.scrollTop = messagesDiv.scrollHeight; // Прокручиваем вниз к последнему сообщению
+        messagesDiv.scrollTop = messagesDiv.scrollHeight; 
       }
       document
         .getElementById("notificationToggle")
         .addEventListener("click", function () {
-          notificationsEnabled = !notificationsEnabled; // Переключаем состояние уведомлений
+          notificationsEnabled = !notificationsEnabled; 
           this.textContent = notificationsEnabled
             ? "Disable notifications"
-            : "Enable notifications"; // Обновляем текст кнопки
+            : "Enable notifications"; 
         });
       const dropZone = document.getElementById("drop_zone");
 
@@ -606,18 +603,18 @@
         let hash = 0;
         for (let i = 0; i < str.length; i++) {
           hash = str.charCodeAt(i) + ((hash << 5) - hash);
-          hash = hash & hash; // Convert to 32bit integer
+          hash = hash & hash; 
         }
         let color = '#';
         for (let i = 0; i < 3; i++) {
-          // Extract 8 bits and convert to hex
+          
           const value = (hash >> (i * 8)) & 0xFF;
           color += ('00' + value.toString(16)).slice(-2);
         }
         return color;
       }
       function lerpColor(a, b, t) {
-        // a and b are hex strings, t is 0..1
+        
         const ah = parseInt(a.replace('#',''),16),
               bh = parseInt(b.replace('#',''),16),
               ar = (ah >> 16) & 0xff, ag = (ah >> 8) & 0xff, ab = ah & 0xff,
@@ -628,12 +625,12 @@
         return '#' + (((1 << 24) + (rr << 16) + (rg << 8) + (rb | 0)).toString(16).slice(1));
       }
       function updateDropZoneProgress(percent) {
-        // percent: 0.0 (start) to 1.0 (done)
+        
         const dropZone = document.getElementById('drop_zone');
         const isDark = document.body.classList.contains('active');
-        // Light mode: from dark to light; Dark mode: from light to dark
-        const startBg = isDark ? '#393c46' : '#cecece';   // normal
-        const endBg = isDark ? '#cecece' : '#393c46'; // opposite of normal
+        
+        const startBg = isDark ? '#393c46' : '#cecece';   
+        const endBg = isDark ? '#cecece' : '#393c46'; 
         const startBorder = isDark ? '#292c35' : '#f1f1f1';
         const endBorder = isDark ? '#f1f1f1' : '#292c35';
         dropZone.style.backgroundColor = lerpColor(startBg, endBg, percent);
@@ -656,7 +653,7 @@
         };
       
         xhr.onload = function() {
-          updateDropZoneProgress(0); // Ensure it's set to 100%
+          updateDropZoneProgress(0);
           if (xhr.status === 200) {
             const data = JSON.parse(xhr.responseText);
             if (data.success) {
@@ -672,7 +669,7 @@
             const data = JSON.parse(xhr.responseText);
             handleError(data.error);
           }
-          setTimeout(() => updateDropZoneProgress(0), 500); // Reset after short delay
+          setTimeout(() => updateDropZoneProgress(0), 500); 
         };
       
         xhr.onerror = function() {
@@ -682,13 +679,6 @@
       
         xhr.send(formData);
       }
-
-// Example event binding
-document.getElementById('file-input').addEventListener('change', function(e) {
-  if (e.target.files.length) {
-    uploadFiles(e.target.files, 'YourName');
-  }
-});
 
     </script>
   </body>
