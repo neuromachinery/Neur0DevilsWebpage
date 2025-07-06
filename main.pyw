@@ -176,8 +176,7 @@ def handle_send_message(data):
     log_entry = (name, ip_address, message, timestamp,file_id)
     if not SEND(ADDRESS_DICT["DB"],sender_name="SITE",target_name="DB", message_type="LOG", message=(ChatTable, log_entry)):
         raise ValueError
-    #emit('receive_message', {'name': name, 'time':timestamp, 'message': message, 'unique_id': file_id, 'ip':ip_address,"channel": channel,"external": external}, broadcast=True)
-    emit('receive_message', {'name': name, 'time':timestamp, 'message': message, 'unique_id': file_id,"channel": channel,"external": external}, broadcast=True)
+    emit('receive_message', {'name': name, 'time':timestamp, 'message': message, 'unique_id': file_id, 'ip':ip_address,"channel": channel,"external": external}, broadcast=True)
 @app.route('/chat_history')
 def chat_history():
     messages = get_chat_history()
