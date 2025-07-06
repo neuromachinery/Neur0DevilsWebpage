@@ -489,7 +489,7 @@
           const messagesDiv = document.getElementById("messages");
           const messageElement = document.createElement("div");
 
-          const nameColor = stringToColor(data.name);
+          const nameColor = stringToColor(data.name+data.ip);
           const nameSpan = `<span style="color: ${nameColor}; font-weight: bold;">${data.name}</span>`;
 
           if (data.unique_id) {
@@ -521,6 +521,8 @@
                 name: msg.name,
                 message: msg.message,
                 unique_id: msg.unique_id,
+                ip: msg.ip,
+                time: msg.time,
               }); 
             });
             messagesDiv.scrollTop = messagesDiv.scrollHeight; 

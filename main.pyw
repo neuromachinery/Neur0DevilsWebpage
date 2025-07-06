@@ -1,4 +1,4 @@
-from os import path,walk,chdir,link,remove
+from os import path,walk,chdir,link,remove,listdir,mkdir
 from flask import Flask, render_template_string, request, render_template,jsonify,send_from_directory
 from flask_socketio import SocketIO, emit
 from uuid import uuid4
@@ -9,9 +9,12 @@ from threading import Thread
 from asyncio import Queue,QueueEmpty
 import GifScraper
 from time import sleep
+from subprocess import run
+from PIL import Image
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads' 
+PREVIEW_FOLDER = 'previews'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 socketio = SocketIO(app)
 HOST = "127.0.0.1"
@@ -27,8 +30,8 @@ ADDRESS_DICT = {
 transiever_queue = Queue()
 
 FILE_SIZE_LIMIT = 100*1024*1024
-CHAT_LIMIT = 300
-SIZE_LIMIT = CHAT_LIMIT*FILE_SIZE_LIMIT
+CHAT_LIMIT = 3000
+SIZE_LIMIT = 2*1024*1024*1024
 TIMEOUT=0.1 #sec
 WAIT_LIMIT = 3 #sec
 LogsTable = "LogsSite"
@@ -40,6 +43,8 @@ DropUsageTable= "dropUsage"
 Temp = "Temp"
 CWD = path.dirname(path.realpath(__file__))
 chdir(CWD)
+if not path.isdir(PREVIEW_FOLDER):
+    mkdir(PREVIEW_FOLDER)
 transiever = SocketTransiever(ADDRESS_DICT["SITE"])
 SEND = transiever.send_message
 def transiever_queue_get():
@@ -53,6 +58,38 @@ def transiever_queue_get():
 RECIEVE = transiever_queue_get
 def now():
     return datetime.now().strftime("[%d.%m.%Y@%H:%M:%S]")
+def getPreview(filepath:str):
+    run(f'ffmpeg -i {filepath} -vf "select=eq(n\\,0),scale=256:256" -q:v 5 {filepath}_preview.jpg')
+    return f'{filepath}_preview.jpg'
+def makeAtlas():
+    output_atlas_path = "atlas.png"
+    output_metadata_path = "atlas_metadata.json"
+
+    atlas_image = Image.new("RGBA", (4096, 4096), (0, 0, 0, 0))
+    listdir(PREVIEW_FOLDER)
+    metadata = {}
+
+    for preview_id in range(256):
+        preview_image_path = path.join(PREVIEW_FOLDER, f"{filename}_preview.jpg")
+        if not path.isfile(preview_image_path):
+            continue
+
+        preview_img = Image.open(preview_image_path).convert("RGBA")
+
+        x = (preview_id % 16) * 256
+        y = (preview_id // 16) * 256
+
+        atlas_image.paste(preview_img, (x, y))
+
+        # Add to metadata
+        metadata[preview_id] = filename
+
+    # Save atlas image
+    atlas_image.save("static/atlas.png")
+
+    # Save metadata JSON
+    with open(output_metadata_path, "w") as f:
+        json.dump(metadata, f, indent=4)
 def countingSort(arr, exp1): 
     n = len(arr) 
     output = [0] * (n) 
@@ -90,6 +127,7 @@ def calculateMemeSpace() -> dict[int,tuple[int,int]]:
     return result
 
 MemeSpace = calculateMemeSpace()
+
 
 def purge(amount:int): # TODO
     total = MemeSpace["total"]
@@ -138,7 +176,8 @@ def handle_send_message(data):
     log_entry = (name, ip_address, message, timestamp,file_id)
     if not SEND(ADDRESS_DICT["DB"],sender_name="SITE",target_name="DB", message_type="LOG", message=(ChatTable, log_entry)):
         raise ValueError
-    emit('receive_message', {'name': name, 'time':timestamp, 'message': message, 'unique_id': file_id, "channel": channel,"external": external}, broadcast=True)
+    #emit('receive_message', {'name': name, 'time':timestamp, 'message': message, 'unique_id': file_id, 'ip':ip_address,"channel": channel,"external": external}, broadcast=True)
+    emit('receive_message', {'name': name, 'time':timestamp, 'message': message, 'unique_id': file_id,"channel": channel,"external": external}, broadcast=True)
 @app.route('/chat_history')
 def chat_history():
     messages = get_chat_history()
