@@ -208,7 +208,9 @@ def upload_file():
     SEND(ADDRESS_DICT["DB"],sender_name="SITE", target_name="DB",message_type="LOG", message=(FileTable, (unique_id, original_filename)))
 
     return jsonify({'success': True, 'original_filename': original_filename, 'unique_id': unique_id}), 200
-
+@app.route('/areyoualive')
+def response():
+    return "yes"
 @app.route('/download/<unique_id>')
 def download_file(unique_id):
     SEND(ADDRESS_DICT["DB"],sender_name="SITE", target_name="DB",message_type="GET", message=(FileTable, "uuid4", unique_id))
