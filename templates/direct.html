@@ -116,6 +116,8 @@
     });
     messageInput.value = '';
     messageInput.focus();
+    chatHistory.textContent += `${name}: ${nsg}\n`;
+    chatHistory.scrollTop = chatHistory.scrollHeight;
   }
 
   sendBtn.addEventListener('click', sendMessage);
@@ -130,10 +132,8 @@
 
   // Append messages to chat history
   socket.on('message', (data) => {
-    if (data.room_uuid === room_uuid) {
-      chatHistory.textContent += `${data.name}: ${data.message}\n`;
-      chatHistory.scrollTop = chatHistory.scrollHeight;
-    }
+    chatHistory.textContent += `${data.name}: ${data.message}\n`;
+    chatHistory.scrollTop = chatHistory.scrollHeight;
   });
 
   // Notify server on disconnect about room closing
