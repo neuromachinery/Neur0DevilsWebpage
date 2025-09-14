@@ -169,7 +169,6 @@ def direct():
 def connect():
     global mmm_sid
     if not mmm_sid and request.headers.get("bot"):
-        print("No bot registered")
         key = request.headers.get("bot")
         SEND(ADDRESS_DICT["DB"],sender_name="SITE",target_name="DB",message_type="BOT",message=(key,))
         try:
@@ -191,7 +190,7 @@ def register(data):
         raise ValueError
     join_room(room_uuid, request.sid, namespace='/direct')
     join_room(room_uuid, mmm_sid, namespace="/direct")
-    emit('room_registered', {'room_uuid': room_uuid}, namespace='/direct')
+    emit('room_registered', {'room_uuid': room_uuid}, namespace='/direct',to=room_uuid)
 @socketio.on('send_message',namespace="/direct")
 def handle_direct_message(data):
     room_uuid = data.get('room_uuid')
@@ -206,15 +205,12 @@ def handle_direct_message(data):
         return jsonify({'error': 'Database unresponsive'}), 500
     if not data:
         emit('error_message', {'message': 'Room does not exist'}, namespace='/direct')
+        print("DB empty response")
         return
         #return jsonify({'error': 'Room not found'}), 404
-    if data[0][1] != name:
-        emit('error_message', {'message': 'Room does not exist'}, namespace='/direct') 
-        #actually, it exists, but if the name isn't right, then someone's tinkering
-        return
-        #return jsonify({'error': 'Room not found'}), 404
+    skip = request.sid if request.sid != mmm_sid else mmm_sid
     SEND(ADDRESS_DICT["DB"],sender_name="SITE",target_name="DB", message_type="LOG", message=(DirectTable, (room_uuid,name,message,ip_address,timestamp,data[0][2])))
-    emit('message', {'room_uuid': room_uuid, 'name': name, 'message': message, 'ip':ip_address,'time':timestamp},to=room_uuid, namespace='/direct',skip_sid=data[0][2])
+    emit('message', {'room_uuid': room_uuid, 'name': name, 'message': message, 'ip':ip_address,'time':timestamp},to=room_uuid, namespace='/direct',skip_sid=skip)
 @socketio.on('leave_room', namespace='/direct')
 def handle_leave_room(data):
     room_uuid = data.get('room_uuid')
