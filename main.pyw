@@ -169,16 +169,19 @@ def direct():
 def connect():
     global mmm_sid
     if not mmm_sid and request.headers.get("bot"):
+        print("No bot registered")
         key = request.headers.get("bot")
         SEND(ADDRESS_DICT["DB"],sender_name="SITE",target_name="DB",message_type="BOT",message=(key,))
         try:
             data = RECIEVE()["message"]
         except ConnectionError:
+            print("Database unresponsive")
             return jsonify({'error': 'Database unresponsive'}), 500
-        if not data:
-            return
         if data:
             mmm_sid = request.sid
+            print(f"Bot has been registered: {mmm_sid}")
+            return
+        print(f"Thats not our bot: {request.sid}")
 @socketio.on('register_room',namespace="/direct")
 def register(data):
     name = data.get('name')
