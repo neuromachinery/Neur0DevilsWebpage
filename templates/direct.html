@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Private Chat with Room</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+  }
+  #nameSection, #chatSection {
+    display: flex;
+    flex-direction: column;
+  }
+  #nameInput {
+    width: 200px;
+    padding: 8px;
+    font-size: 16px;
+  }
+  #startBtn, #sendBtn {
+    margin-top: 10px;
+    padding: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 120px;
+  }
+  #chatHistory {
+    margin-top: 20px;
+    height: 300px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    background-color: #f9f9f9;
+  }
+  #messageInput {
+    margin-top: 10px;
+    height: 70px;
+    font-size: 16px;
+    padding: 8px;
+  }
+  #warning {
+    margin-top: 10px;
+    color: #a33;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<div id="nameSection">
+  <label for="nameInput">Enter your name:</label>
+  <input type="text" id="nameInput" placeholder="Your name" />
+  <button id="startBtn">Start Chat</button>
+  <div id="warning">Note: Reconnecting to the same room is not possible. Closing or refreshing the page will end the chat.</div>
+</div>
+
+<div id="chatSection" style="display:none;">
+  <div id="chatHistory"></div>
+  <textarea id="messageInput" placeholder="Type your message here (Shift+Enter for newline)"></textarea>
+  <button id="sendBtn">Send</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+<script>
+  const socket = io("/direct");
+
+  const nameSection = document.getElementById('nameSection');
+  const nameInput = document.getElementById('nameInput');
+  const startBtn = document.getElementById('startBtn');
+  const warning = document.getElementById('warning');
+
+  const chatSection = document.getElementById('chatSection');
+  const chatHistory = document.getElementById('chatHistory');
+  const messageInput = document.getElementById('messageInput');
+  const sendBtn = document.getElementById('sendBtn');
+
+  let room_uuid = null;
+  let name = '';
+  let disconnectNotified = false;
+
+  // On Start Chat button click
+  startBtn.addEventListener('click', () => {
+    name = nameInput.value.trim();
+    if (!name) {
+      alert('Please enter a name');
+      return;
+    }
+    socket.emit('register_room', { name });
+  });
+
+  // Server returns the new room UUID for this user
+  socket.on('room_registered', (data) => {
+    room_uuid = data.room_uuid;
+    // Hide name input, show chat UI and hide warning
+    nameSection.style.display = 'none';
+    chatSection.style.display = 'flex';
+    warning.style.display = 'none';
+    chatHistory.textContent = `Connected to private chat room: ${room_uuid}\n`;
+    messageInput.focus();
+  });
+
+  // Send message handler
+  function sendMessage() {
+    if (!room_uuid) return;
+    const msg = messageInput.value.trim();
+    if (!msg) return;
+    socket.emit('send_message', {
+      room_uuid,
+      name,
+      message: msg
+    });
+    messageInput.value = '';
+    messageInput.focus();
+    chatHistory.textContent += `${name}: ${msg}\n`;
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+  }
+
+  sendBtn.addEventListener('click', sendMessage);
+
+  // Support Shift+Enter for newline, Enter alone sends message
+  messageInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  // Append messages to chat history
+  socket.on('message', (data) => {
+    chatHistory.textContent += `${data.name}: ${data.message}\n`;
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+  });
+
+  // Notify server on disconnect about room closing
+  window.addEventListener('beforeunload', () => {
+    if (room_uuid && !disconnectNotified) {
+      // Attempt to notify server to delete room
+      socket.emit('leave_room', { room_uuid, name });
+      disconnectNotified = true;
+    }
+  });
+
+  // Also notify on socket disconnect event (if triggered by network etc)
+  socket.on('disconnect', (reason) => {
+    if (room_uuid && !disconnectNotified) {
+      socket.emit('leave_room', { room_uuid, name });
+      disconnectNotified = true;
+    }
+  });
+
+  // Optionally handle errors from server
+  socket.on('error_message', (data) => {
+    alert(data.message);
+  });
+</script>
+
+</body>
+</html>

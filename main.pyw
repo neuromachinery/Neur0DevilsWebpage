@@ -1,6 +1,6 @@
 from os import path,walk,chdir,link,remove,listdir,mkdir
 from flask import Flask, render_template_string, request, render_template,jsonify,send_from_directory
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO, emit, join_room, disconnect, close_room
 from uuid import uuid4
 from datetime import datetime
 from DBconnect import SocketTransiever
@@ -40,7 +40,10 @@ FileTable = "FilenamesSite"
 MiscTable = "LogsMisc"
 DropTable = "dropTable"
 DropUsageTable= "dropUsage"
+DirectTable = "DirectSite"
+DirectRoomsTable = "RoomsSite"
 Temp = "Temp"
+mmm_sid = None
 CWD = path.dirname(path.realpath(__file__))
 chdir(CWD)
 if not path.isdir(PREVIEW_FOLDER):
@@ -159,6 +162,75 @@ def serve_main_page():
 @app.route('/chat')
 def chat():
     return render_template('chat.html')
+@app.route('/direct')
+def direct():
+    return render_template('direct.html')
+@socketio.on('connect',namespace="/direct")
+def connect():
+    global mmm_sid
+    if not mmm_sid and request.headers.get("bot"):
+        key = request.headers.get("bot")
+        SEND(ADDRESS_DICT["DB"],sender_name="SITE",target_name="DB",message_type="BOT",message=(key,))
+        try:
+            data = RECIEVE()["message"]
+        except ConnectionError:
+            return jsonify({'error': 'Database unresponsive'}), 500
+        if not data:
+            return
+        if data:
+            mmm_sid = request.sid
+@socketio.on('register_room',namespace="/direct")
+def register(data):
+    name = data.get('name')
+    room_uuid = str(uuid4())
+    log_entry = (room_uuid,name,request.sid)
+    if not SEND(ADDRESS_DICT["DB"],sender_name="SITE",target_name="DB", message_type="LOG", message=(DirectRoomsTable, log_entry)):
+        raise ValueError
+    join_room(room_uuid, request.sid, namespace='/direct')
+    join_room(room_uuid, mmm_sid, namespace="/direct")
+    emit('room_registered', {'room_uuid': room_uuid}, namespace='/direct')
+@socketio.on('send_message',namespace="/direct")
+def handle_direct_message(data):
+    room_uuid = data.get('room_uuid')
+    name = data['name']
+    message = data['message']
+    ip_address = request.remote_addr
+    timestamp = now()
+    SEND(ADDRESS_DICT["DB"],sender_name="SITE",target_name="DB", message_type="GET", message=(DirectRoomsTable, "uuid4", room_uuid))
+    try:
+        data = RECIEVE()["message"]
+    except ConnectionError:
+        return jsonify({'error': 'Database unresponsive'}), 500
+    if not data:
+        emit('error_message', {'message': 'Room does not exist'}, namespace='/direct')
+        return
+        #return jsonify({'error': 'Room not found'}), 404
+    if data[0][1] != name:
+        emit('error_message', {'message': 'Room does not exist'}, namespace='/direct') 
+        #actually, it exists, but if the name isn't right, then someone's tinkering
+        return
+        #return jsonify({'error': 'Room not found'}), 404
+    SEND(ADDRESS_DICT["DB"],sender_name="SITE",target_name="DB", message_type="LOG", message=(DirectTable, (room_uuid,name,message,ip_address,timestamp,data[0][2])))
+    emit('message', {'room_uuid': room_uuid, 'name': name, 'message': message, 'ip':ip_address,'time':timestamp},to=room_uuid, namespace='/direct',skip_sid=data[0][2])
+@socketio.on('leave_room', namespace='/direct')
+def handle_leave_room(data):
+    room_uuid = data.get('room_uuid')
+    close_room(room_uuid,"/direct")
+    SEND(ADDRESS_DICT["DB"],sender_name="SITE",target_name="DB", message_type="CLR", message=(DirectRoomsTable, "uuid4", room_uuid))
+@socketio.on('disconnect', namespace='/direct')
+def on_disconnect():
+    sid = request.sid
+    SEND(ADDRESS_DICT["DB"],sender_name="SITE",target_name="DB", message_type="GET", message=(DirectRoomsTable, "sid", sid))
+    try:
+        data = RECIEVE()["message"]
+        if not data: pass
+        else:
+            close_room(data[0][0], namespace='/direct')
+    except ConnectionError:
+        pass
+    SEND(ADDRESS_DICT["DB"],sender_name="SITE",target_name="DB", message_type="CLR", message=(DirectRoomsTable, "sid", sid))
+    
+
 @socketio.on('send_message',namespace="/chat")
 def handle_send_message(data):
     name = data['name'][:40]
