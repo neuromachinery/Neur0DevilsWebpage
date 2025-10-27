@@ -397,7 +397,7 @@ setInterval(updateTime, 1000);
 
 function ChangeTheme(themeName) {
   const themeLink = document.getElementById('theme');
-  themeLink.href = `/CSS/chat_themes/${themeName}.css`;
+  themeLink.href = `static/CSS/chat_themes/${themeName}.css`;
   currentTheme = themeName;
 
   // Сохраняем в localStorage

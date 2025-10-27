@@ -18,7 +18,7 @@
    <link rel="manifest" href="http://195.122.224.152:8000/static/site.webmanifest">
    <title>Chat</title>
    <link rel="stylesheet" href="./all.css">
-   <link id="theme" rel="stylesheet" href="/CSS/chat_themes/classic.css">
+   <link id="theme" rel="stylesheet" href="static/CSS/chat_themes/classic.css">
    <!-- Элемент для воспроизведения звука -->
 </head>
 
@@ -107,7 +107,7 @@
 
       <button id="notificationToggle">Disable notifications</button>
       <div id="drop_zone">Drop files here</div>
-      <button id="returnButton" onclick="window.location.href='/templates/main.html'">
+      <button id="returnButton" onclick="window.location.href='main.html'">
          Return to Main Page
       </button>
       <div id="media-overlay"
@@ -121,12 +121,12 @@
    <div class="bottom-menu" id="bottomMenu">
       <div class="menu-header" id="menu-header">Navigation</div><span id="localisation" onclick="ChangeLocale()">en</span>
       <div class="menu-content">
-         <a id="menu-button-main" href="/templates/main.html" onclick="toggleBottomMenu()">🏠 Main</a>
-         <a id="menu-button-about" href="/templates/About Page.html" onclick="toggleBottomMenu()">❔ About</a>
-         <a id="menu-button-drop" href="/templates/drop.html" onclick="toggleBottomMenu()">📥 Get drop</a>
-         <a id="menu-button-make_drop" href="/templates/make_drop.html" onclick="toggleBottomMenu()">📤 Make drop</a>
-         <a id="menu-button-direct" href="/templates/direct.html" onclick="toggleBottomMenu()">📨 Direct</a>
-         <a id="menu-button-ctrl" href="/templates/ctrl.html" onclick="toggleBottomMenu()">❔ Ctrl</a>
+         <a id="menu-button-main" href="main" onclick="toggleBottomMenu()">🏠 Main</a>
+         <a id="menu-button-about" href="About Page" onclick="toggleBottomMenu()">❔ About</a>
+         <a id="menu-button-drop" href="drop" onclick="toggleBottomMenu()">📥 Get drop</a>
+         <a id="menu-button-make_drop" href="make_drop" onclick="toggleBottomMenu()">📤 Make drop</a>
+         <a id="menu-button-direct" href="direct" onclick="toggleBottomMenu()">📨 Direct</a>
+         <a id="menu-button-ctrl" href="ctrl" onclick="toggleBottomMenu()">❔ Ctrl</a>
 
       </div>
       <div id="BottomMenu">
@@ -145,8 +145,8 @@
          </div>
       </div>
    </div>
-   <script src="/Scripts/socket.io.js"></script>
-   <script src="/Scripts/chat.js"></script>
+   <script src="static/Scripts/socket.io.js"></script>
+   <script src="static/Scripts/chat.js"></script>
 
 </body>
 
