@@ -1,0 +1,407 @@
+    @import url("https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c&display=swap");
+
+    h1 {
+        font-weight: 600;
+        font-style: normal;
+    }
+
+    .active h1 {
+        color: white;
+    }
+
+    :root {
+        --dark: #292c35;
+        --drop-dark: #393c46;
+        --light: #f1f1f1;
+        --drop-light: #cecece;
+        --label: #000000;
+    }
+
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+
+    body.active {
+        background-color: var(--dark);
+    }
+
+    body.active .switcher-label .switcher-toggler {
+        left: 56%;
+    }
+
+    input[type="checkbox"] {
+        opacity: 0;
+        display: none;
+        visibility: hidden;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .active input {
+        background-color: #3f3f3f;
+        color: #ffffff;
+        font-style: var(--light);
+        padding: 5px;
+    }
+
+    .active button {
+        background-color: #000000;
+    }
+
+    .active #messages {
+        background-color: #3f3f3f;
+        border: 3px #ffffff solid;
+        color: #ffffff;
+        padding: 10px;
+        height: 300px;
+        overflow-y: auto;
+        margin-bottom: 10px;
+    }
+
+    .active #drop_zone {
+        border: 2px dashed var(--light);
+        color: var(--light);
+        background-color: var(--drop-dark);
+        padding-top: 5px;
+        width: 300px;
+        height: 200px;
+        text-align: center;
+        margin: 10px auto;
+    }
+
+    body {
+        margin: 0px;
+        justify-content: center;
+        background-color: var(--light);
+        position: relative;
+    }
+
+    #Main {
+        margin: 10px;
+    }
+
+    #messages {
+        background-color: #ffffff;
+        border: 2px solid #000000;
+        color: #000000;
+        padding: 10px;
+        height: 300px;
+        overflow-y: auto;
+        margin-bottom: 10px;
+    }
+
+    input {
+        border: none;
+        color: #000000;
+        padding: 5px;
+    }
+    img{
+        visibility: collapse;
+    }
+    #MenuText{
+        position: absolute;
+        left: 0;
+        margin: 6px;
+    }
+    button {
+        cursor: pointer;
+        padding: 10px 0px;
+        border: none;
+        background-color: #007bff;
+        color: white;
+        font-weight: bold;
+    }
+
+    #SendButton {
+        padding: 10px;
+    }
+
+    #drop_zone {
+        border: 2px dashed var(--dark);
+        background-color: var(--drop-light);
+        padding-top: 5px;
+        width: 300px;
+        height: 200px;
+        text-align: center;
+        margin: 10px auto;
+    }
+
+    #messageForm {
+        display: flex;
+    }
+
+    #messageForm input[type="text"] {
+        flex: 1;
+        margin-right: 5px;
+    }
+
+    #notificationToggle {
+        margin-top: 10px;
+    }
+
+    #returnButton {
+        display: block;
+        margin: 10px auto;
+        padding: 10px 20px;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    #returnButton:hover {
+        background-color: #0056b3;
+    }
+
+
+    #error-message {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        background-color: rgba(255, 0, 0, 0.8);
+        color: white;
+        padding: 15px;
+        display: none;
+        z-index: 1000;
+    }
+
+    .media-preview {
+        max-height: 1.5em;
+        max-width: auto;
+        margin-left: 10px;
+        vertical-align: middle;
+    }
+
+    .switcher-label {
+        background-color: var(--label);
+        cursor: pointer;
+        width: 60px;
+        height: 27px;
+        display: flex;
+        align-items: center;
+        padding: 2px 7px;
+        justify-content: space-between;
+        position: relative;
+        margin-bottom: 5px;
+    }
+
+
+    .switcher-label .switcher-toggler {
+        background-color: white;
+        width: 25px;
+        height: 25px;
+        z-index: 1;
+        display: block;
+        position: absolute;
+        left: 2%;
+    }
+
+
+    .switcher-label i {
+        font-size: 15px;
+    }
+
+    .switcher-label i:first-child {
+        color: dodgerblue;
+    }
+
+    .switcher-label i:last-child {
+        color: gold;
+    }
+
+    ::-webkit-scrollbar {
+        width: 10px;
+    }
+
+
+    ::-webkit-scrollbar-track {
+        background-color: #979797;
+    }
+
+
+    ::-webkit-scrollbar-thumb {
+        background-color: #333;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: #555;
+    }
+
+    #name {
+        width: 20%;
+        margin-right: 5px;
+    }
+
+    #notificationToggle {
+        width: 20%;
+    }
+
+    #BottomMenu {
+        padding: 0px;
+        background-color: #202020;
+        color: #fff;
+        position: fixed;
+        bottom: 0px;
+        width: 100%;
+        height: 27px;
+    }
+
+    #StartButton {
+        height: 0px;
+        padding: 0px;
+        background-color: sparent;
+    }
+
+    #StartImg {
+        margin-top: auto;
+        margin-bottom: auto;
+        width: 85px;
+    }
+
+
+
+    .bottom-menu {
+        color: white;
+        position: fixed;
+        bottom: -60vh;
+        /* Скрыто на 60% высоты viewport */
+        width: 90%;
+        max-width: 250px;
+        height: auto;
+        /* 60% высоты экрана */
+        max-height: 500px;
+        background: rgb(94, 94, 94);
+        z-index: 1000;
+    }
+
+    .bottom-menu.active {
+        bottom: 0;
+        margin-bottom: 27px;
+    }
+
+    .menu-button {
+        position: fixed;
+        padding: 15px 15px;
+        background: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+        z-index: 1001;
+    }
+
+    .menu-content {
+        padding: 5px 20px;
+    }
+
+    .menu-content a {
+        display: block;
+        padding: 15px;
+        text-decoration: none;
+        color: #ffffff;
+        border-bottom: 1px solid #eee;
+        font-size: 18px;
+    }
+
+    .menu-content a:hover {
+        background: #444444;
+
+    }
+
+    .menu-header {
+        padding: 20px;
+        border-bottom: 1px solid #eee;
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: none;
+        z-index: 999;
+    }
+
+    .overlay.active {
+        display: block;
+    }
+
+    #ClockBackground {
+        position: absolute;
+        left: 50%;
+        justify-content: center;
+        width: 75px;
+        height: 25px;
+        align-items: center;
+        background-color: #979797;
+        visibility: collapse;
+    }
+
+    .animated-dropdown {
+        position: fixed;
+        right: 0%;
+        display: inline-block;
+        margin: 2px;
+    }
+
+    .dropdown-trigger {
+        display: flex;
+        justify-content: center;
+        /* Горизонтальное центрирование */
+        align-items: center;
+        background: #2196F3;
+        font-size: 12px;
+        color: white;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+        height: 23px;
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        display: block;
+        bottom: 100%;
+        left: -30px;
+        font-size: small;
+        background: white;
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .animated-dropdown:hover .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .menu-item {
+        padding: 10px 10px;
+        cursor: pointer;
+        color: #000000;
+        border-bottom: 1px solid #000000;
+    }
+
+    .menu-item:hover {
+        background: #f5f5f5;
+    }
+
+    .menu-item:last-child {
+        border-bottom: none;
+    }
+    #localisation{
+      position: absolute;
+      display: inline-block;
+      top: -2px;
+      left: 150px;
+      font-size: 15px;
+      text-align: center;
+      font-size: 20px;
+      padding: 21px;
+      cursor: pointer;
+    }

@@ -1,0 +1,194 @@
+    #loadingPopup {
+        display: none;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        border-radius: 5px;
+        z-index: 1000;
+    }
+
+    .stripe {
+        position: fixed; /* Fixed to keep them in view */
+        top: 0;
+        bottom: 0;
+        width: 20%;
+        background-color: grey;
+    }
+    .left-stripe {
+        left: 0;
+    }
+    .right-stripe {
+        right: 0;
+    }
+    .content {
+            /* Width of the content area */
+        margin-top: 50px; /* Space from the top */
+        text-align: center; /* Center text */
+    }
+    .big-text {
+        font-size: 48px; /* Big text size */
+        margin-bottom: 20px; /* Space between big and small text */
+        font-family: "Font Awesome 6 Brands";
+        color: aqua;
+        letter-spacing: 3px;
+    }
+    .small-text {
+        font-size: 24px; /* Smaller text size */
+        font-family: "Font Awesome 6 Brands";
+        font-weight: 200;
+        font-style: normal;
+        color: aquamarine;
+        letter-spacing: 3px;
+        margin: 15px;
+    }
+    .emoticon-text{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    text-align:center; /* Centered text alignment */
+    pointer-events:none;/* Prevent mouse events on text */
+    }
+    .hypertext{
+    font-size: 26px;
+    color: rgb(75, 138, 255);
+    font-weight: 900;
+    }
+    /* Cube Styles */
+    .cube {
+        position: absolute;
+        top: 75%; /* Distance from the top */
+        width: 100px; /* Size of the cube */
+        display: flex;
+        justify-content: center;
+        height: 100px; /* Size of the cube */
+        transform-style: preserve-3d;
+        animation: rotate 5s infinite linear; /* Animation for rotation */
+    }
+
+    @keyframes rotate {
+        from {
+            transform: rotateX(0) rotateY(0) rotateZ(0);
+        }
+        to {
+            transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg);
+        }
+    }
+
+    .cube div {
+        position: absolute;
+        border: 2px solid rgb(0, 0, 0);
+    }
+
+    .cube .face1 { 
+        transform: translateZ(50px); 
+        width: 100%; 
+        height: 100%; 
+        background-color: rgba(255, 0, 0, 0.5); 
+    }
+
+    .cube .face2 { 
+        transform: rotateY(90deg) translateZ(50px); 
+        width: 100%; 
+        height: 100%; 
+        background-color: rgba(0, 255, 0, 0.5); 
+    }
+
+    .cube .face3 { 
+        transform: rotateY(180deg) translateZ(50px); 
+        width: 100%; 
+        height: 100%; 
+        background-color: rgba(0, 0, 255, 0.5); 
+    }
+
+    .cube .face4 { 
+        transform: rotateY(-90deg) translateZ(50px); 
+        width: 100%; 
+        height: 100%; 
+        background-color: rgba(255, 255, 0, 0.5); 
+    }
+    .cube .face5 { 
+        transform: rotateX(90deg) translateZ(50px); 
+        width: 100%; 
+        height: 100%; 
+        background-color: rgba(255, 0, 255, 0.5); 
+    }
+    .cube .face6 { 
+        transform: rotateX(-90deg) translateZ(50px); 
+        width: 100%; 
+        height: 100%; 
+        background-color: rgba(0, 242, 255, 0.5); 
+    }
+    /* Text on Face */
+    .welcome-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 18px; /* Text size */
+        color: white; /* Text color */
+        font-weight:bold; /* Bold text for emphasis */
+        text-align:center; /* Centered text alignment */
+        pointer-events:none; /* Prevent mouse events on text */
+    }
+    
+    /* Image Styles */
+    .image-container {
+        margin-top: 20px; /* Space above the image */
+    }
+    img {
+        max-width: 100%; /* Responsive image size */
+        height: auto; /* Maintain aspect ratio */
+    }
+
+    body {
+        margin: 0;
+        height: 100vh; /* Full height of the viewport */
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        background-color: #111111;
+        position: relative; /* To position stripes correctly */
+    }
+    h1{
+    color: aqua;
+    font-family: "Font Awesome 6 Brands";
+    letter-spacing: 3px;
+    font-weight: 100;
+    }
+    #button-menu{
+        margin-top: 15px;
+    }
+    button {
+        border: 1px solid;
+        border-radius: 15px;
+        background-color: transparent;
+        text-transform: uppercase;
+        font-size: 16px;
+        padding: 15px 30px;
+        transition: 0.2s;
+        margin: 5px;
+        cursor: pointer;
+    }
+    .neon-btn--purple{
+        color: #f038ff;
+    }
+    .neon-btn--purple:hover {
+        background-color: #f038ff;
+        color: #fff;
+        border: 1px solid #f038ff;
+        box-shadow: 10px 10px 100px 6px #f038ff;
+    }
+    .neon-btn--blue {
+        color: #4cc9f0;
+    }
+    .neon-btn--blue:hover {
+        background-color: #4cc9f0;
+        color: #fff;
+        border: 1px solid #4cc9f0;
+        box-shadow: 10px 10px 100px 6px #4cc9f0;
+    }

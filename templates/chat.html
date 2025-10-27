@@ -1,696 +1,153 @@
 <!DOCTYPE html>
+<!-- saved from url=(0032)http://195.122.224.152:8000/chat -->
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="robots" content="noindex" />
-    <link rel="icon" href="/static/favicon.gif" type="image/gif" />
-    <link
-      rel="apple-touch-icon"
-      sizes="180x180"
-      href="/static/apple-touch-icon.png"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="32x32"
-      href="/static/favicon-32x32.png"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href="/static/favicon-16x16.png"
-    />
-    <link rel="manifest" href="/static/site.webmanifest" />
-    <title>Chat</title>
-    <link
-      rel="stylesheet"
-      href="https://use.fontawesome.com/releases/v6.3.0/css/all.css"
-    />
-    <!-- Элемент для воспроизведения звука -->
-    <audio id="notificationSound" src="static/ping.mp3" preload="auto"></audio>
-  </head>
-  <style>
-    @import url("https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c&display=swap");
-    
-    h1 {
-      font-family: "M PLUS Rounded 1c", serif;
-      font-weight: 600;
-      font-style: normal;
-    }
+<link type="text/css" rel="stylesheet" id="dark-mode-custom-link">
+<link type="text/css" rel="stylesheet" id="dark-mode-general-link">
+<style lang="en" type="text/css" id="dark-mode-custom-style"></style>
+<style lang="en" type="text/css" id="dark-mode-native-style"></style>
 
-    .active h1 {
-      color: white;
-    }
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-    :root {
-      --dark: #292c35;
-      --drop-dark: #393c46;
-      --light: #f1f1f1;
-      --drop-light: #cecece;
-      --label: #000000;
-    }
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta name="robots" content="noindex">
+   <link rel="icon" href="http://195.122.224.152:8000/static/favicon.gif" type="image/gif">
+   <link rel="apple-touch-icon" sizes="180x180" href="http://195.122.224.152:8000/static/apple-touch-icon.png">
+   <link rel="icon" type="image/png" sizes="32x32" href="http://195.122.224.152:8000/static/favicon-32x32.png">
+   <link rel="icon" type="image/png" sizes="16x16" href="http://195.122.224.152:8000/static/favicon-16x16.png">
+   <link rel="manifest" href="http://195.122.224.152:8000/static/site.webmanifest">
+   <title>Chat</title>
+   <link rel="stylesheet" href="./all.css">
+   <link id="theme" rel="stylesheet" href="/CSS/chat_themes/classic.css">
+   <!-- Элемент для воспроизведения звука -->
+</head>
 
-    
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+<body class="active">
+   <audio id="notificationSound" src="static/ping.mp3" preload="auto"></audio>
+   <div id="Main">
+      <div>
+         <div id="ClockBackground">
+            <a id="Clock">time</a>
+         </div>
+         <h1 id="CH">Chat</h1>
 
-    
-    body.active {
-      background-color: var(--dark);
-    }
+      </div>
+      <p>
+         <input type="checkbox" name="switcher" id="switcher-input" class="switcher-input">
+         <img src="/static/MaxwellIdle.gif" width="25">
+      </p>
 
-    
-    body.active .switcher-label .switcher-toggler {
-      left: 56%;
-    }
+      <label class="switcher-label" for="switcher-input">
+         <i class="fas fa-solid fa-moon"></i>
+         <span class="switcher-toggler"></span>
+         <i class="fas fa-solid fa-sun"></i>
+      </label>
 
-    input[type="checkbox"] {
-      opacity: 0;
-      display: none;
-      visibility: hidden;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
+      <div id="messages">
+         <div><span style="color: #2d8c3f; font-weight: bold;">_super_333</span>: доброе утро</div>
+         <div><span style="color: #e8afa5; font-weight: bold;">Neur0Devil</span>: <a
+               href="http://195.122.224.152:8000/chat#"
+               onclick="handleFileClick('/download/9fa8479c-a4da-4ea6-97cb-9910dc29d56c', ' AgADZHwAAsFE6Uo.mp4', 'progress-9fa8479c-a4da-4ea6-97cb-9910dc29d56c')">
+               AgADZHwAAsFE6Uo.mp4
+            </a> <span id="progress-9ec4447d-0d44-40fc-a03a-ba94aebb70a8" style="margin-left:8px;"></span></div>
+         <div><span style="color: #1be7f7; font-weight: bold;">Neur0Devil</span>: <a
+               href="http://195.122.224.152:8000/chat#"
+               onclick="handleFileClick('/download/8890036b-1cd2-4019-b62a-f510d8eab0fb', ' AgADq4UAArdkyEg.mp4', 'progress-8890036b-1cd2-4019-b62a-f510d8eab0fb')">
+               AgADq4UAArdkyEg.mp4
+            </a> <span id="progress-8890036b-1cd2-4019-b62a-f510d8eab0fb" style="margin-left:8px;"></span></div>
+         <div><span style="color: #1be7f7; font-weight: bold;">Neur0Devil</span>: <a
+               href="http://195.122.224.152:8000/chat#"
+               onclick="handleFileClick('/download/93721829-2570-44d9-a3e7-f8e361263912', ' AgADeiEAAmftuFM.mp4', 'progress-93721829-2570-44d9-a3e7-f8e361263912')">
+               AgADeiEAAmftuFM.mp4
+            </a> <span id="progress-93721829-2570-44d9-a3e7-f8e361263912" style="margin-left:8px;"></span></div>
+         <div><span style="color: #1be7f7; font-weight: bold;">Neur0Devil</span>: <a
+               href="http://195.122.224.152:8000/chat#"
+               onclick="handleFileClick('/download/2cbd9d09-3b5c-43d2-9c85-758860cda3c3', ' AQADMLsxG0smrFN9.png', 'progress-2cbd9d09-3b5c-43d2-9c85-758860cda3c3')">
+               AQADMLsxG0smrFN9.png
+            </a> <span id="progress-2cbd9d09-3b5c-43d2-9c85-758860cda3c3" style="margin-left:8px;"></span></div>
+         <div><span style="color: #811a3f; font-weight: bold;">Излишне вежливый панк</span>: <a
+               href="http://195.122.224.152:8000/chat#"
+               onclick="handleFileClick('/download/ffa6fb75-efc2-423d-966d-e99043e1a950', ' AQADOP8xG8oqwEt-.png', 'progress-ffa6fb75-efc2-423d-966d-e99043e1a950')">
+               AQADOP8xG8oqwEt-.png
+            </a> <span id="progress-ffa6fb75-efc2-423d-966d-e99043e1a950" style="margin-left:8px;"></span></div>
+         <div><span style="color: #1be7f7; font-weight: bold;">Neur0Devil</span>: <a
+               href="http://195.122.224.152:8000/chat#"
+               onclick="handleFileClick('/download/eb44e800-bd66-4bf9-8cc4-73df9dfbd9a9', ' AQAE_jEbJU15S30.png', 'progress-eb44e800-bd66-4bf9-8cc4-73df9dfbd9a9')">
+               AQAE_jEbJU15S30.png
+            </a> <span id="progress-eb44e800-bd66-4bf9-8cc4-73df9dfbd9a9" style="margin-left:8px;"></span></div>
+         <div><span style="color: #1be7f7; font-weight: bold;">Neur0Devil</span>: <a
+               href="http://195.122.224.152:8000/chat#"
+               onclick="handleFileClick('/download/1d8138b5-1f3f-4d01-a08d-4beabd93b229', ' AgADC4MAAvCMyUs.mp4', 'progress-1d8138b5-1f3f-4d01-a08d-4beabd93b229')">
+               AgADC4MAAvCMyUs.mp4
+            </a> <span id="progress-1d8138b5-1f3f-4d01-a08d-4beabd93b229" style="margin-left:8px;"></span></div>
+         <div><span style="color: #1be7f7; font-weight: bold;">Neur0Devil</span>: <a
+               href="http://195.122.224.152:8000/chat#"
+               onclick="handleFileClick('/download/f5c82130-dd8f-4b73-9717-1efb3a4c3dcc', ' AQADnPgxG1B7yEt-.png', 'progress-f5c82130-dd8f-4b73-9717-1efb3a4c3dcc')">
+               AQADnPgxG1B7yEt-.png
+            </a> <span id="progress-f5c82130-dd8f-4b73-9717-1efb3a4c3dcc" style="margin-left:8px;"></span></div>
+         <div><span style="color: #1be7f7; font-weight: bold;">Neur0Devil</span>: <a
+               href="http://195.122.224.152:8000/chat#"
+               onclick="handleFileClick('/download/64557c73-f759-4ae8-a6b8-3a37c5aad108', ' AgADDI8AAoQEsEs.mp4', 'progress-64557c73-f759-4ae8-a6b8-3a37c5aad108')">
+               AgADDI8AAoQEsEs.mp4
+            </a> <span id="progress-64557c73-f759-4ae8-a6b8-3a37c5aad108" style="margin-left:8px;"></span></div>
+         <div><span style="color: #1be7f7; font-weight: bold;">Neur0Devil</span>: <a
+               href="http://195.122.224.152:8000/chat#"
+               onclick="handleFileClick('/download/b521b80d-aff4-4c91-9960-24454fb970b6', ' AQADGvsxG2_nyEt8.png', 'progress-b521b80d-aff4-4c91-9960-24454fb970b6')">
+               AQADGvsxG2_nyEt8.png
+            </a> <span id="progress-b521b80d-aff4-4c91-9960-24454fb970b6" style="margin-left:8px;"></span></div>
+      </div>
+      <div id="error-message"></div>
 
-    .active input {
-      background-color: #3f3f3f;
-      color: #ffffff;
-      font-style: var(--light);
-      border-radius: 10px;
-      padding: 5px;
-    }
+      <form id="messageForm" onsubmit="sendMessage(event)">
+         <input id="name" placeholder="Name" required="" maxlength="40">
+         <input type="text" id="message" placeholder="Message" required="" autocomplete="off" maxlength="1000">
+         <button id="SendButton" type="submit">Send</button>
+         <img src="/static/pa6v03g1glo91.gif" width="25">
+      </form>
 
-    .active button {
-      background-color: #cc7700;
-    }
+      <button id="notificationToggle">Disable notifications</button>
+      <div id="drop_zone">Drop files here</div>
+      <button id="returnButton" onclick="window.location.href='/templates/main.html'">
+         Return to Main Page
+      </button>
+      <div id="media-overlay"
+         style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.8);justify-content:center;align-items:center;z-index:9999;">
+         <div id="media-content" style="position:relative;"></div>
+      </div>
+   </div>
 
-    .active #messages {
-      background-color: #3f3f3f;
-      border: 3px #000000 ridge;
-      border-radius: 10px;
-      border-color: #ccc;
-      color: #ffffff;
-      padding: 10px;
-      height: 300px;
-      overflow-y: auto;
-      transition: background-color 0.5s ease;
-      margin-bottom: 10px;
-    }
+   <div class="overlay" onclick="toggleBottomMenu()"></div>
 
-    .active #drop_zone {
-      border: 2px dashed var(--light);
-      color: var(--light);
-      background-color: var(--drop-dark);
-      padding-top: 5px;
-      border-radius: 10px;
-      width: 300px;
-      height: 200px;
-      text-align: center;
-      margin: 10px auto;
-    }
+   <div class="bottom-menu" id="bottomMenu">
+      <div class="menu-header" id="menu-header">Navigation</div><span id="localisation" onclick="ChangeLocale()">en</span>
+      <div class="menu-content">
+         <a id="menu-button-main" href="/templates/main.html" onclick="toggleBottomMenu()">🏠 Main</a>
+         <a id="menu-button-about" href="/templates/About Page.html" onclick="toggleBottomMenu()">❔ About</a>
+         <a id="menu-button-drop" href="/templates/drop.html" onclick="toggleBottomMenu()">📥 Get drop</a>
+         <a id="menu-button-make_drop" href="/templates/make_drop.html" onclick="toggleBottomMenu()">📤 Make drop</a>
+         <a id="menu-button-direct" href="/templates/direct.html" onclick="toggleBottomMenu()">📨 Direct</a>
+         <a id="menu-button-ctrl" href="/templates/ctrl.html" onclick="toggleBottomMenu()">❔ Ctrl</a>
 
-    body {
-      margin: 10px;
-      font-family: Arial, sans-serif;
-      justify-content: center;
-      background-color: var(--light);
-      transition: background-color 0.5s ease;
-      position: relative;
-    }
+      </div>
+      <div id="BottomMenu">
+         <button id="StartButton" class="menu-button" onclick="toggleBottomMenu()">
+            <img id="StartImg" src="/static/start.png" alt="Menu">
+            <a id="MenuText">Menu</a>
+         </button>
+         <div class="animated-dropdown">
+            <button class="dropdown-trigger" id="ThemeButton">Theme</button>
+            <div class="dropdown-menu">
+               <div class="menu-item" onclick="ChangeTheme('classic')">Classic</div>
+               <div class="menu-item" onclick="ChangeTheme('neon')">Neon</div>
+               <div class="menu-item" onclick="ChangeTheme('minimalism')">Minimalism</div>
+               <div class="menu-item"></div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <script src="/Scripts/socket.io.js"></script>
+   <script src="/Scripts/chat.js"></script>
 
-    #messages {
-      background-color: #ffffff;
-      border: 3px #000000 ridge;
-      border-radius: 10px;
-      border-color: #ccc;
-      color: #000000;
-      padding: 10px;
-      height: 300px;
-      overflow-y: auto;
-      margin-bottom: 10px;
-    }
+</body>
 
-    input {
-      border-radius: 10px;
-      border-color: #ccc;
-      color: #000000;
-      transition: background-color 0.5s ease;
-      padding: 5px;
-    }
-
-    button {
-      border-radius: 5px;
-      font-family: "M PLUS Rounded 1c", serif;
-      cursor: pointer;
-      padding: 10px 20px;
-      border: none;
-      background-color: #007bff;
-      color: white;
-      font-weight: bold;
-      transition: background-color 0.5s ease;
-      border-radius: 5px;
-    }
-    
-    #drop_zone {
-      border: 2px dashed var(--dark);
-      background-color: var(--drop-light);
-      padding-top: 5px;
-      border-radius: 10px;
-      width: 300px;
-      height: 200px;
-      text-align: center;
-      transition: background-color 0.5s ease;
-      margin: 10px auto;
-    }
-    
-    #messageForm {
-      display: flex;
-    }
-
-    #messageForm input[type="text"] {
-      flex: 1;
-      margin-right: 5px;
-    }
-
-    #notificationToggle {
-      margin-top: 10px;
-    }
-
-    #returnButton {
-      display: block;
-      margin: 10px auto;
-      padding: 10px 20px;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    #returnButton:hover {
-      background-color: #0056b3;
-    }
-
-    
-    #error-message {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: rgba(255, 0, 0, 0.8);
-      color: white;
-      padding: 15px;
-      border-radius: 5px;
-      display: none; 
-      z-index: 1000; 
-    }
-
-    .media-preview {
-      max-height: 1.5em; 
-      max-width: auto; 
-      margin-left: 10px;
-      vertical-align: middle; 
-    }
-
-    .switcher-label {
-      background-color: var(--label);
-      cursor: pointer;
-      width: 60px;
-      height: 27px;
-      display: flex;
-      align-items: center;
-      padding: 2px 7px;
-      justify-content: space-between;
-      border-radius: 30px;
-      position: relative;
-      margin-bottom: 5px;
-    }
-
-    
-    .switcher-label .switcher-toggler {
-      background-color: white;
-      width: 25px;
-      height: 25px;
-      z-index: 1;
-      border-radius: 50%;
-      display: block;
-      position: absolute;
-      left: 2%;
-      transition: all 0.5s ease;
-    }
-
-    
-    .switcher-label i {
-      font-size: 15px;
-    }
-
-    .switcher-label i:first-child {
-      color: dodgerblue;
-    }
-
-    .switcher-label i:last-child {
-      color: gold;
-    }
-
-    ::-webkit-scrollbar {
-      width: 10px; 
-    }
-
-    
-    ::-webkit-scrollbar-track {
-      background-color: #979797; 
-      border-radius: 5px;
-    }
-
-    
-    ::-webkit-scrollbar-thumb {
-      background-color: #333; 
-      border-radius: 30px; 
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background-color: #555;
-    }
-
-    #name {
-      width: 20%;
-      margin-right: 5px;
-    }
-
-    #notificationToggle {
-      width: 20%;
-    }
-  </style>
-
-  <body>
-    <h1>Чат</h1>
-
-    <p>
-      <input
-        type="checkbox"
-        name="switcher"
-        id="switcher-input"
-        class="switcher-input"
-      />
-      <img src="/static/MaxwellIdle.gif" width="25" />
-    </p>
-
-    <label class="switcher-label" for="switcher-input">
-      <i class="fas fa-solid fa-moon"></i>
-      <span class="switcher-toggler"></span>
-      <i class="fas fa-solid fa-sun"></i>
-    </label>
-
-    <div id="messages"></div>
-    <div id="error-message"></div>
-
-    <form id="messageForm" onsubmit="sendMessage(event)">
-      <input 
-        id="name" 
-        placeholder="Ваше имя" 
-        required 
-        maxlength="40"/>
-      <input
-        type="text"
-        id="message"
-        placeholder="Ваше сообщение"
-        required
-        autocomplete="off"
-        maxlength="1000"
-      />
-      <button type="submit">Send</button>
-      <img src="/static/pa6v03g1glo91.gif" width="25" />
-    </form>
-
-    <button id="notificationToggle">Disable notifications</button>
-    <div id="drop_zone">Drop files here</div>
-    <button id="returnButton" onclick="location.href='/'">
-      Return to Main Page
-    </button>
-    <div id="media-overlay" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.8);justify-content:center;align-items:center;z-index:9999;">
-      <div id="media-content" style="position:relative;"></div>
-    </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
-    <script>
-      const socket = io("/chat")
-      const inputCheckbox = window.document.querySelector(".switcher-input");
-      const documentBody = document.body;
-
-      
-      inputCheckbox.addEventListener("change", () => {
-        let theme = getTheme();
-
-        if (theme == "dark") {
-          setTheme("light");
-        } else {
-          setTheme("dark");
-        }
-      });
-
-
-      
-      function changeBackground() {
-        let theme = getTheme();
-
-        if (theme == "dark") {
-          documentBody.classList.add("active");
-        } else {
-          documentBody.classList.remove("active");
-        }
-      }
-
-      function checkTheme() {
-        let theme = getTheme();
-        if (theme == null || theme == undefined || typeof theme != "string") {
-          setTheme("light");
-        } else {
-          if (theme == "dark") {
-            setTheme("dark");
-          } else {
-            setTheme("light");
-          }
-        }
-      }
-
-      function setTheme(theme = "light") {
-        window.localStorage.setItem("theme", theme);
-        changeBackground();
-      }
-
-      function getTheme() {
-        return window.localStorage.getItem("theme");
-      }
-      checkTheme();
-
-      function handleError(error) {
-        const errorMessageDiv = document.getElementById("error-message");
-        errorMessageDiv.textContent = error; 
-        errorMessageDiv.style.display = "block"; 
-
-        
-        setTimeout(() => {
-          errorMessageDiv.style.display = "none";
-        }, 3000);
-      }
-      let notificationsEnabled = true; 
-      function escapeHtml(text) {
-        const map = {
-          '&': '&amp;',
-          '<': '&lt;',
-          '>': '&gt;',
-          '"': '&quot;',
-          "'": '&#039;'
-        };
-        return text.replace(/[&<>"']/g, function(m) { return map[m]; });
-      }
-      document.addEventListener("DOMContentLoaded", loadChatHistory);
-      function showOverlay(objectUrl, filename) {
-        const overlay = document.getElementById('media-overlay');
-        const content = document.getElementById('media-content');
-        content.innerHTML = ''; 
-      
-        let element;
-        if (filename.match(/\.(jpg|jpeg|png|gif)$/i)) {
-          element = document.createElement('img');
-          element.src = objectUrl;
-          element.style.maxWidth = '90vw';
-          element.style.maxHeight = '90vh';
-        } else if (filename.match(/\.(mp4|webm|ogg)$/i)) {
-          element = document.createElement('video');
-          element.src = objectUrl;
-          element.controls = true;
-          element.autoplay = true;
-          element.style.maxWidth = '90vw';
-          element.style.maxHeight = '90vh';
-        } else {
-          
-          const a = document.createElement('a');
-          a.href = objectUrl;
-          a.download = filename;
-          a.click();
-        }
-        content.appendChild(element);
-      
-        overlay.style.display = 'flex';
-      
-        
-        overlay.onclick = function(e) {
-          if (e.target === overlay) {
-            overlay.style.display = 'none';
-            content.innerHTML = '';
-            URL.revokeObjectURL(objectUrl); 
-          }
-        }
-      }     
-      function handleFileClick(url, filename, progressId) {
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', url, true);
-        xhr.responseType = 'blob';
-
-        xhr.onprogress = function(event) {
-          if (event.lengthComputable) {
-            const percent = Math.floor((event.loaded / event.total) * 100);
-            document.getElementById(progressId).textContent = percent + '%';
-          }
-        };
-      
-        xhr.onload = function() {
-          if (xhr.status === 200) {
-            document.getElementById(progressId).textContent = ''; 
-            const blob = xhr.response;
-            const objectUrl = URL.createObjectURL(blob);
-          
-            
-            if (filename.match(/\.(jpg|jpeg|png|gif)$/i)) {
-              showOverlay(objectUrl, filename);
-            } else if (filename.match(/\.(mp4|webm|ogg)$/i)) {
-              showOverlay(objectUrl, filename);
-            } else {
-              
-              const a = document.createElement('a');
-              a.href = objectUrl;
-              a.download = filename;
-              a.style.display = 'none';
-              document.body.appendChild(a);
-              a.click();
-              document.body.removeChild(a);
-              URL.revokeObjectURL(objectUrl);
-            }
-          } else {
-            document.getElementById(progressId).textContent = 'Error';
-            alert('Download failed');
-          }
-        };
-      
-        xhr.onerror = function() {
-          document.getElementById(progressId).textContent = 'Error';
-          alert('Download failed');
-        };
-
-          xhr.send();
-        }
-       function renderMessage(data) {
-          const messagesDiv = document.getElementById("messages");
-          const messageElement = document.createElement("div");
-
-          const nameColor = stringToColor(data.name+data.ip);
-          const nameSpan = `<span style="color: ${nameColor}; font-weight: bold;">${data.name}</span>`;
-
-          if (data.unique_id) {
-            const originalFilename = data.message;
-            const progressId = `progress-${data.unique_id}`;
-            const fileLink = `<a href="#" 
-              onclick="handleFileClick('/download/${data.unique_id}', '${originalFilename}', '${progressId}')">
-              ${originalFilename}
-            </a>`;
-            
-            messageElement.innerHTML = `${nameSpan}: ${fileLink} <span id="${progressId}" style="margin-left:8px;"></span>`;
-          } else {
-            messageElement.innerHTML = `${nameSpan}: ${data.message}`;
-          }
-        
-          messagesDiv.appendChild(messageElement);
-        }
-
-
-      function loadChatHistory() {
-        fetch("/chat_history")
-          .then((response) => response.json())
-          .then((data) => {
-            const messagesDiv = document.getElementById("messages");
-            messagesDiv.innerHTML = ""; 
-
-            data.messages.forEach((msg) => {
-              renderMessage({
-                name: msg.name,
-                message: msg.message,
-                unique_id: msg.unique_id,
-                ip: msg.ip,
-                time: msg.time,
-              }); 
-            });
-            messagesDiv.scrollTop = messagesDiv.scrollHeight; 
-          })
-          .catch((error) =>
-            console.error("Error loading chat history:", error)
-          );
-      }
-
-      socket.on("receive_message", function (data) {
-        renderMessage(data);
-        messagesDiv = document.getElementById("messages");
-        messagesDiv.scrollTop = messagesDiv.scrollHeight; 
-        
-        if (notificationsEnabled && data.name !== userName) {
-          showNotification(data.name, data.message);
-          playNotificationSound();
-        }
-      });
-      function playNotificationSound() {
-        const notificationSound = document.getElementById("notificationSound");
-        notificationSound.currentTime = 0; 
-        notificationSound.play(); 
-      }
-      function showNotification(name, message) {
-        if (Notification.permission === "granted") {
-          new Notification(`${name} написал:`, { body: message });
-        } else if (Notification.permission !== "denied") {
-          Notification.requestPermission().then((permission) => {
-            if (permission === "granted") {
-              new Notification(`${name} написал:`, { body: message });
-            }
-          });
-        }
-      }
-
-      function sendMessage(event) {
-        event.preventDefault();
-        userName = document.getElementById("name").value; 
-        message = document.getElementById("message").value;
-
-        socket.emit("send_message", {
-          name: userName,
-          message: message,
-          channel: -1,
-          external: false,
-        }); 
-
-        document.getElementById("message").value = ""; 
-        messagesDiv = document.getElementById("messages");
-        messagesDiv.scrollTop = messagesDiv.scrollHeight; 
-      }
-      document
-        .getElementById("notificationToggle")
-        .addEventListener("click", function () {
-          notificationsEnabled = !notificationsEnabled; 
-          this.textContent = notificationsEnabled
-            ? "Disable notifications"
-            : "Enable notifications"; 
-        });
-      const dropZone = document.getElementById("drop_zone");
-
-      dropZone.addEventListener("dragover", (event) => {
-        event.preventDefault();
-        dropZone.style.borderColor = "#00a500";
-      });
-
-      dropZone.addEventListener("dragleave", () => {
-        dropZone.style.borderColor = "#ccc";
-      });
-
-      dropZone.addEventListener("drop", (event) => {
-        event.preventDefault();
-        name = document.getElementById("name").value;
-        dropZone.style.borderColor = "#ccc";
-        const files = event.dataTransfer.files;
-        uploadFiles(files, name);
-      });
-      function stringToColor(str) {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-          hash = str.charCodeAt(i) + ((hash << 5) - hash);
-          hash = hash & hash; 
-        }
-        let color = '#';
-        for (let i = 0; i < 3; i++) {
-          
-          const value = (hash >> (i * 8)) & 0xFF;
-          color += ('00' + value.toString(16)).slice(-2);
-        }
-        return color;
-      }
-      function lerpColor(a, b, t) {
-        
-        const ah = parseInt(a.replace('#',''),16),
-              bh = parseInt(b.replace('#',''),16),
-              ar = (ah >> 16) & 0xff, ag = (ah >> 8) & 0xff, ab = ah & 0xff,
-              br = (bh >> 16) & 0xff, bg = (bh >> 8) & 0xff, bb = bh & 0xff,
-              rr = ar + t * (br - ar),
-              rg = ag + t * (bg - ag),
-              rb = ab + t * (bb - ab);
-        return '#' + (((1 << 24) + (rr << 16) + (rg << 8) + (rb | 0)).toString(16).slice(1));
-      }
-      function updateDropZoneProgress(percent) {
-        
-        const dropZone = document.getElementById('drop_zone');
-        const isDark = document.body.classList.contains('active');
-        
-        const startBg = isDark ? '#393c46' : '#cecece';   
-        const endBg = isDark ? '#cecece' : '#393c46'; 
-        const startBorder = isDark ? '#292c35' : '#f1f1f1';
-        const endBorder = isDark ? '#f1f1f1' : '#292c35';
-        dropZone.style.backgroundColor = lerpColor(startBg, endBg, percent);
-        dropZone.style.borderColor = lerpColor(startBorder, endBorder, percent);
-      }
-      function uploadFiles(files, name) {
-        const formData = new FormData();
-        for (let i = 0; i < files.length; i++) {
-          formData.append("file", files[i]);
-        }
-      
-        const xhr = new XMLHttpRequest();
-        xhr.open("POST", "/upload", true);
-      
-        xhr.upload.onprogress = function(event) {
-          if (event.lengthComputable) {
-            const percent = event.loaded / event.total;
-            updateDropZoneProgress(percent);
-          }
-        };
-      
-        xhr.onload = function() {
-          updateDropZoneProgress(0);
-          if (xhr.status === 200) {
-            const data = JSON.parse(xhr.responseText);
-            if (data.success) {
-              socket.emit("send_message", {
-                name: name,
-                message: data.original_filename,
-                unique_id: data.unique_id,
-                channel: -1,
-                external: false,
-              });
-            }
-          } else {
-            const data = JSON.parse(xhr.responseText);
-            handleError(data.error);
-          }
-          setTimeout(() => updateDropZoneProgress(0), 500); 
-        };
-      
-        xhr.onerror = function() {
-          handleError("Upload failed");
-          updateDropZoneProgress(0);
-        };
-      
-        xhr.send(formData);
-      }
-
-    </script>
-  </body>
 </html>

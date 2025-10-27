@@ -1,0 +1,303 @@
+
+    @import url("https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c&display=swap");
+
+    #loadingPopup {
+      display: none;
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      border-radius: 5px;
+      z-index: 1000;
+    }
+
+    body {
+      margin: 0;
+      background: #111;
+      color: #f4f4f4;
+    }
+
+    button {
+      border-radius: 5px;
+      font-family: "M PLUS Rounded 1c", serif;
+      cursor: pointer;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      font-weight: bold;
+      transition: background-color 0.5s ease;
+    }
+
+    #returnButton {
+      display: block;
+      margin: 10px auto;
+      padding: 10px 20px;
+      color: rgb(255, 255, 255);
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #returnButton:hover {
+      background-color: #0056b3;
+    }
+
+    .content {
+      /* Width of the content area */
+      margin-top: 20px;
+      /* Space from the top */
+      text-align: center;
+      /* Center text */
+    }
+
+    /* Cube Styles */
+    .cube {
+      position: absolute;
+      top: 600px;
+      /* Distance from the top */
+      right: 100px;
+      /* Distance from the left */
+      width: 100px;
+      /* Size of the cube */
+      height: 100px;
+      /* Size of the cube */
+      transform-style: preserve-3d;
+      animation: rotate 5s infinite linear;
+      /* Animation for rotation */
+    }
+
+    @keyframes rotate {
+      from {
+        transform: rotateX(0) rotateY(0) rotateZ(0);
+      }
+
+      to {
+        transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg);
+      }
+    }
+
+    .cube div {
+      position: fixed;
+      border: 2px solid rgb(0, 0, 0);
+    }
+
+    .cube .face1 {
+      transform: translateZ(50px);
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 0, 0, 0.5);
+    }
+
+    .cube .face2 {
+      transform: rotateY(90deg) translateZ(50px);
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 255, 0, 0.5);
+    }
+
+    .cube .face3 {
+      transform: rotateY(180deg) translateZ(50px);
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 255, 0.5);
+    }
+
+    .cube .face4 {
+      transform: rotateY(-90deg) translateZ(50px);
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 0, 0.5);
+    }
+
+    .cube .face5 {
+      transform: rotateX(90deg) translateZ(50px);
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 0, 255, 0.5);
+    }
+
+    .cube .face6 {
+      transform: rotateX(-90deg) translateZ(50px);
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 0, 0, 0.5);
+    }
+
+    /* Text on Face */
+    .welcome-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 18px;
+      /* Text size */
+      color: white;
+      /* Text color */
+      font-weight: bold;
+      /* Bold text for emphasis */
+      text-align: center;
+      /* Centered text alignment */
+      pointer-events: none;
+      /* Prevent mouse events on text */
+    }
+
+    .emoticon-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      /* Centered text alignment */
+      pointer-events: none;
+      /* Prevent mouse events on text */
+    }
+
+    /* Image Styles */
+    .image-container {
+      margin-top: 20px;
+      /* Space above the image */
+    }
+
+    .content {
+      font-family: "M PLUS Rounded 1c", serif;
+    }
+
+    img {
+      max-width: 100%;
+      /* Responsive image size */
+      height: auto;
+      /* Maintain aspect ratio */
+    }
+
+    li {
+      display: grid;
+      padding: 5px 5px 5px 5px;
+      margin: auto;
+      width: 300px;
+    }
+
+    #Telegram {
+      border-radius: 25px;
+      padding: 5px 5px 5px 5px;
+      font-size: large;
+    }
+
+    button > img,
+    button > span {
+      vertical-align: middle;
+    }
+
+    #Discord {
+      border-radius: 25px;
+      padding: 5px 15px 0px 1px;
+      font-size: large;
+    }
+
+    #DiscordImg {
+      border-radius: 25px;
+      padding-bottom: 0px;
+    }
+
+    #TeamSpeak {
+      border-radius: 30px;
+      padding: 5px 15px 5px 1px;
+      font-size: large;
+    }
+
+    #TeamSpeakImg {
+      border-radius: 25px;
+      padding-bottom: 0px;
+    }
+
+    .NavigationBar {
+      padding: 0px 0px 0px 0px;
+      color: #000000;
+      justify-content: center;
+      background-color: #202020;
+      color: #fff;
+    }
+
+    .FooterBar {
+      padding: 5px 0px 5px 0px;
+      background-color: #202020;
+      color: #fff;
+      position: fixed;
+      bottom: 0px;
+      width: 100%;
+    }
+
+    .Container {
+      display: flex;
+      justify-content: space-between;
+      width: 90%;
+      min-width: 455px;
+      margin: auto;
+    }
+
+    #NavigationButtons{
+      margin-top: auto;
+      margin-bottom: auto;
+    }
+
+    #ChatButton{
+      background-color: transparent;
+      width: 40px;
+      margin-top: auto;
+      margin-bottom: auto;
+    }
+
+    .Logo {
+      height: 45px;
+      margin-top: auto;
+      margin-bottom: auto;
+    }
+
+    #GitHub {
+      margin: 10px;
+      border-radius: 25px;
+      padding: 5px 10px 5px 5px;
+      color: #fff;
+      background-color: #000000;
+      text-align: center;
+      font-size: large;
+    }
+
+    #GitHubImg {
+      border-radius: 25px;
+      padding-right: 5px;
+    }
+
+    #footerimg {
+      width: 45px;
+      height: 35px;
+      margin-top: auto;
+      margin-bottom: auto;
+    }
+
+    .Return {
+      background-color: #202020;
+    }
+
+    .Mail {
+      background-color: #111111;
+      margin: auto;
+    }
+
+    .copied-message {
+      position: fixed;
+      background-color: #4caf50;
+      color: white;
+      padding: 10px;
+      border-radius: 25px;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+      pointer-events: none;
+      z-index: 10000;
+    }
+
+    .show-copied {
+      opacity: 1;
+    }

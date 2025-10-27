@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<!-- saved from url=(0033)http://195.122.224.152:8000/about -->
+<html lang="en"><link type="text/css" rel="stylesheet" id="dark-mode-custom-link"><link type="text/css" rel="stylesheet" id="dark-mode-general-link"><style lang="en" type="text/css" id="dark-mode-custom-style"></style><style lang="en" type="text/css" id="dark-mode-native-style"></style><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <link rel="icon" href="http://195.122.224.152:8000/static/favicon.gif" type="image/gif">
+    <link rel="apple-touch-icon" sizes="180x180" href="http://195.122.224.152:8000/static/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="http://195.122.224.152:8000/static/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="http://195.122.224.152:8000/static/favicon-16x16.png">
+    <link rel="manifest" href="http://195.122.224.152:8000/static/site.webmanifest">
+    <link rel="stylesheet" href="/CSS/about.css">
+    <title>About Page</title>
+  </head>
+  
+  <body>
+    <header class="NavigationBar">
+      <div class="Container">
+        <div id="NavigationButtons">
+        <button class="Return" onclick="window.location.href='/templates/main.html'">
+          <img src="/About Page_files/HomeIcon.png">
+        </button>
+        <button id="ChatButton" onclick="window.location.href='/templates/Chat.html'">
+          <img src="/About Page_files/Chat.png">
+        </button>
+        </div>
+        <nav class="Links">
+          <img class="Logo" src="/About Page_files/pa6v03g1glo91.gif" alt="Лого">
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="content">
+        <h1>Here be contact information</h1>
+        <p>If you really want to contact me, here's how:</p>
+        <ul>
+          <li>
+            <button id="Discord" onclick="location.href='https://discord.gg/nZ7KGdzZ2X'">
+              <img id="DiscordImg" src="/About Page_files/DiscordIcon.png" width="80">
+              <span>Discord</span>
+            </button>
+          </li>
+          <li>
+            <button id="TeamSpeak" onclick="launchTeamSpeak()">
+              <img id="TeamSpeakImg" src="/About Page_files/TeamGames.jpg" width="50">
+              <span>TeamSpeak</span>
+            </button>
+          </li>
+          <li>
+            <button id="Telegram" onclick="location.href='tg://resolve?domain=Meme_Mailman_bot'">
+              <img src="/About Page_files/telegramIcon.png" width="25">
+              <span>Telegram Bot</span>
+            </button>
+          </li>
+          <li>
+            <button id="GitHub" onclick="location.href='https://github.com/neuromachinery'">
+              <img id="GitHubImg" src="/About Page_files/GithubIcon.png" width="25">
+              <span>GitHub</span>
+            </button>
+          </li>
+          <li>
+            <button id="copyButton" class="Mail" onclick="copyToClipboard()">
+              Mail: leshasgusch@gmail.com
+            </button>
+            <div class="copied-message" id="copiedMessage">Скопировано!</div>
+          </li>
+        </ul>
+      </div>
+      <!-- Cube -->
+      <div class="cube">
+        <div class="face1">
+          <div class="welcome-text">Welcome</div>
+        </div>
+        <div class="face2">
+          <div class="welcome-text">To my</div>
+        </div>
+        <div class="face3">
+          <div class="emoticon-text">(´･ω･`)</div>
+        </div>
+        <div class="face4">
+          <div class="emoticon-text">(≧∇≦)</div>
+        </div>
+        <div class="face5">
+          <div class="welcome-text">Page</div>
+        </div>
+        <div class="face6">
+          <div class="welcome-text">Enjoy!</div>
+        </div>
+      </div>
+    </main>
+    <footer class="FooterBar">
+      <div class="Container">
+        <img id="footerimg" src="/About Page_files/MaxwellIdle.gif">
+        <nav class="Links">
+          <a>Designed by W4SD</a>
+          <button id="GitHub" onclick="location.href='https://github.com/W4SDJC'">
+            <img id="GitHubImg" src="/About Page_files/GithubIcon.png" width="25">
+            <span>GitHub</span>
+          </button>
+        </nav>
+      </div>
+    </footer>
+  
+  <script>
+    document
+      .getElementById("copyButton")
+      .addEventListener("click", function (event) {
+        // Получаем координаты курсора мыши
+        const x = event.clientX - 55;
+        const y = event.clientY - 23;
+
+        // Показываем уведомление
+        const copiedMessage = document.getElementById("copiedMessage");
+        copiedMessage.classList.add("show-copied"); // Добавляем класс для показа
+        copiedMessage.style.left = `${x}px`;
+        copiedMessage.style.top = `${y}px`;
+
+        // Скрываем уведомление через 2 секунды
+        setTimeout(() => {
+          copiedMessage.classList.remove("show-copied"); // Удаляем класс для скрытия
+        }, 2000);
+      });
+
+    function copyToClipboard() {
+      var $temp = $("<input>");
+      $("body").append($temp);
+      $temp.val("leshasgusch@gmail.com").select();
+      document.execCommand("copy");
+      $temp.remove();
+    }
+
+    function showLoadingPopup() {
+      document.getElementById("loadingPopup").style.display = "block";
+    }
+
+    function copyToClipboard() {
+      var $temp = $("<input>");
+      $("body").append($temp);
+      $temp.val("leshasgusch@gmail.com").select();
+      document.execCommand("copy");
+      $temp.remove();
+    }
+  </script>
+</body></html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <style>
+        .container { padding: 20px; }
+        button { padding: 10px; margin: 5px; }
+        .status { margin: 10px 0; padding: 10px; background: #f0f0f0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="status">
+            Текущая локаль: <span id="locale">en</span>
+        </div>
+        
+        <button onclick="setLocale('ru')">Русский</button>
+        <button onclick="setLocale('en')">English</button>
+        <button onclick="setLocale('es')">Español</button>
+    </div>
+
+    <script>
+        // Применить локаль к странице
+        function applyLocale(locale) {
+            document.getElementById('locale').textContent = locale;
+            console.log('Локаль применена:', locale);
+        }
+
+        // Установить и сохранить локаль
+        function setLocale(locale) {
+            localStorage.setItem('locale', locale);
+            applyLocale(locale);
+        }
+
+        // Загрузить сохраненную локаль при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedLocale = localStorage.getItem('locale') || 'en';
+            applyLocale(savedLocale);
+        });
+    </script>
+</body>
+</html>
