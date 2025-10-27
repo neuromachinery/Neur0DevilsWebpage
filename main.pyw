@@ -160,8 +160,13 @@ def serve_main_page():
     return render_template_string(html_content)
 
 @app.route('/chat')
+@app.route('/chat.html')
 def chat():
     return render_template('chat.html')
+@app.route('/About Me')
+@app.route('/About Me.html')
+def about_me():
+    return render_template('About Page.html')
 @app.route('/direct')
 def direct():
     return render_template('direct.html')
@@ -319,7 +324,11 @@ def get_drop(unique_id):
         return render_template('drop.html',drop_data=drop,uses=uses-used-1)
     return render_template("drop_exhausted.html",max_usage=uses)
 @app.route('/about')
+<<<<<<< HEAD
 @app.route('/About Page')
+=======
+@app.route('/about.html')
+>>>>>>> refs/remotes/origin/main
 def about():
     return render_template('About Page.html')
 
