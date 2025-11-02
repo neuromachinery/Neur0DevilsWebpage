@@ -434,10 +434,8 @@ function ChangeLocale() {
     document.getElementById('menu-header').textContent = "Navigation";
     document.getElementById('menu-button-main').textContent = "🏠 Main";
     document.getElementById('menu-button-about').textContent = "❔ About";
-    document.getElementById('menu-button-drop').textContent = "📥 Get drop";
     document.getElementById('menu-button-make_drop').textContent = "📤 Make drop";
     document.getElementById('menu-button-direct').textContent = "📨 Direct";
-    document.getElementById('menu-button-ctrl').textContent = "❔ ctrl";
     if (document.getElementById('notificationToggle').textContent === "Отключить уведомления") {
       document.getElementById('notificationToggle').textContent = "Disable notifications";
     } else { document.getElementById('notificationToggle').textContent = "Enable notifications"; }
@@ -455,10 +453,8 @@ function ChangeLocale() {
     document.getElementById('menu-header').textContent = "Навигация";
     document.getElementById('menu-button-main').textContent = "🏠 Главная";
     document.getElementById('menu-button-about').textContent = "❔ Обо мне";
-    document.getElementById('menu-button-drop').textContent = "📥 Получить дроп";
     document.getElementById('menu-button-make_drop').textContent = "📤 Создать дроп";
     document.getElementById('menu-button-direct').textContent = "📨 Личка";
-    document.getElementById('menu-button-ctrl').textContent = "❔ ctrl";
     if (document.getElementById('notificationToggle').textContent === "Disable notifications") {
       document.getElementById('notificationToggle').textContent = "Отключить уведомления";
     } else { document.getElementById('notificationToggle').textContent = "Включить уведомления"; }
