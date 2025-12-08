@@ -324,6 +324,8 @@ def get_drop(unique_id):
         return render_template('drop.html',drop_data=drop,uses=uses-used-1)
     return render_template("drop_exhausted.html",max_usage=uses)
 @app.route('/about')
+@app.route('/About Page')
+@app.route('/About Page')
 @app.route('/about.html')
 def about():
     return render_template('About Page.html')
