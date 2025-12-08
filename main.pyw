@@ -388,7 +388,7 @@ if __name__ == "__main__":
             @socketio.on('disconnect')
             def handle_disconnect():pass
             NetPort().run()
-            socketio.run(app,host="0.0.0.0", port=EXT_PORT, debug=False)
+            socketio.run(app,host="::", port=EXT_PORT, debug=False)
             quit()
             
         except KeyboardInterrupt as E:
