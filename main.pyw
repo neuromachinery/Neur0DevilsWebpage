@@ -18,7 +18,7 @@ PREVIEW_FOLDER = 'previews'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 socketio = SocketIO(app)
 HOST = "127.0.0.1"
-EXT_PORT = 8000
+EXT_PORT = 80
 SITE_PORT = 54322
 DB_PORT = 54321
 MMM_PORT = 54323
@@ -34,6 +34,8 @@ CHAT_LIMIT = 300
 SIZE_LIMIT = 2*1024*1024*1024
 TIMEOUT=0.1 #sec
 WAIT_LIMIT = 3 #sec
+CERTIFICATE = "true.cert"
+CERT_KEY = "true.key"
 LogsTable = "LogsSite"
 ChatTable = "ChatSite"
 FileTable = "FilenamesSite"
@@ -390,7 +392,7 @@ if __name__ == "__main__":
             @socketio.on('disconnect')
             def handle_disconnect():pass
             NetPort().run()
-            socketio.run(app,host="::", port=EXT_PORT, debug=False)
+            socketio.run(app,host="::", port=EXT_PORT, ssl_context=(CERTIFICATE,CERT_KEY), debug=False)
             quit()
             
         except KeyboardInterrupt as E:
@@ -399,4 +401,5 @@ if __name__ == "__main__":
             work=False
         except Exception as E:
             ExceptionHandler(E)
-            socketio.stop()
+            socketio.stop() 
+
