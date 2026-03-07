@@ -1,4 +1,4 @@
-from os import path,walk,chdir,link,remove,listdir,mkdir
+from os import path,walk,chdir,link,remove,listdir,mkdir, getenv
 from flask import Flask, render_template_string, request, render_template,jsonify,send_from_directory
 from flask_socketio import SocketIO, emit, join_room, disconnect, close_room
 from uuid import uuid4
@@ -11,17 +11,21 @@ import GifScraper
 from time import sleep
 from subprocess import run
 from PIL import Image
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
-UPLOAD_FOLDER = 'uploads' 
-PREVIEW_FOLDER = 'previews'
+UPLOAD_FOLDER = getenv('UPLOAD_FOLDER','uploads' )
+PREVIEW_FOLDER = getenv('PREVIEW_FOLDER','previews' )
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 socketio = SocketIO(app)
-HOST = "127.0.0.1"
-EXT_PORT = 80
-SITE_PORT = 54322
-DB_PORT = 54321
-MMM_PORT = 54323
+CERTIFICATE = getenv('CERT', "cert.pem")
+CERT_KEY = getenv('KEY', "key.pem")
+HOST = getenv('HOST', "127.0.0.1")
+EXT_PORT = int(getenv('PORT', 8000))
+SITE_PORT = int(getenv('SITE_PORT',54322))
+DB_PORT = int(getenv('DB_PORT',54321))
+MMM_PORT = int(getenv('MMM_PORT',54323))
 ADDRESS_DICT = {
     "DB":(HOST,DB_PORT),
     "MMM":(HOST,MMM_PORT),
@@ -29,13 +33,12 @@ ADDRESS_DICT = {
 }
 transiever_queue = Queue()
 
-FILE_SIZE_LIMIT = 100*1024*1024
+FILE_SIZE_LIMIT = int(getenv('FILE_SIZE_LIMIT',2*1024*1024*1024))
 CHAT_LIMIT = 300
-SIZE_LIMIT = 2*1024*1024*1024
+TOTAL_SIZE_LIMIT = int(getenv('TOTAL_SIZE_LIMIT',32*1024*1024*1024))
 TIMEOUT=0.1 #sec
-WAIT_LIMIT = 3 #sec
-CERTIFICATE = "true.cert"
-CERT_KEY = "true.key"
+WAIT_LIMIT = int(getenv('WAIT_LIMIT',30)) #sec
+
 LogsTable = "LogsSite"
 ChatTable = "ChatSite"
 FileTable = "FilenamesSite"
@@ -66,6 +69,7 @@ def now():
 def getPreview(filepath:str):
     run(f'ffmpeg -i {filepath} -vf "select=eq(n\\,0),scale=256:256" -q:v 5 {filepath}_preview.jpg')
     return f'{filepath}_preview.jpg'
+"""
 def makeAtlas():
     output_atlas_path = "atlas.png"
     output_metadata_path = "atlas_metadata.json"
@@ -95,6 +99,7 @@ def makeAtlas():
     # Save metadata JSON
     with open(output_metadata_path, "w") as f:
         json.dump(metadata, f, indent=4)
+"""
 def countingSort(arr, exp1): 
     n = len(arr) 
     output = [0] * (n) 
@@ -273,7 +278,7 @@ def upload_file():
         return jsonify({'error': 'No selected file'}), 400
     if file.content_length > FILE_SIZE_LIMIT:
         return jsonify({'error': f'File size exceeds {FILE_SIZE_LIMIT} MB limit.'}), 400
-    if MemeSpace["total"] + file.content_length > SIZE_LIMIT:
+    if MemeSpace["total"] + file.content_length > TOTAL_SIZE_LIMIT:
         purge(file.content_length)
 
     unique_id = str(uuid4())
