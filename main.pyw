@@ -397,7 +397,7 @@ if __name__ == "__main__":
             @socketio.on('disconnect')
             def handle_disconnect():pass
             NetPort().run()
-            socketio.run(app,host="::", port=EXT_PORT, cert_file=CERTIFICATE,key_file=CERT_KEY, debug=False)
+            socketio.run(app,host="::", port=EXT_PORT, certfile=CERTIFICATE,keyfile=CERT_KEY, debug=False)
             quit()
             
         except KeyboardInterrupt as E:
