@@ -158,6 +158,10 @@ def get_chat_history():
     except ConnectionError:
         return jsonify({'error': 'Database unresponsive'}), 500
     return data
+
+
+
+
 @app.route('/')
 @app.route('/main.html')
 def serve_main_page():
@@ -387,24 +391,36 @@ class NetPort():
         try:self.thread.start()
         except Exception as E:
             ExceptionHandler(E)
+
+def run_app():
+    # Wire error handlers once, not in a loop
+    @socketio.on_error()
+    def error_handler(E):
+        ExceptionHandler(E)
+
+    @socketio.on('disconnect')
+    def handle_disconnect():
+        pass
+
+    # Start your background thread
+    NetPort().run()
+
+    # Let the WSGI server or socketio run handle the request loop
+    socketio.run(
+        app,
+        host="::",
+        port=EXT_PORT,
+        certfile=CERTIFICATE,
+        keyfile=CERT_KEY,
+        debug=False   # still not for production!
+    )
+
 if __name__ == "__main__":
-    work=True
-    while work:
-        try:
-            @socketio.on_error()
-            def error_handler(E):
-                ExceptionHandler(E)
-            @socketio.on('disconnect')
-            def handle_disconnect():pass
-            NetPort().run()
-            socketio.run(app,host="::", port=EXT_PORT, certfile=CERTIFICATE,keyfile=CERT_KEY, debug=False)
-            quit()
-            
-        except KeyboardInterrupt as E:
-            ExceptionHandler(E)
-            socketio.stop()
-            work=False
-        except Exception as E:
-            ExceptionHandler(E)
-            socketio.stop() 
+    try:
+        run_app()
+    except KeyboardInterrupt as E:
+        ExceptionHandler(E)
+    except Exception as E:
+        ExceptionHandler(E)
+
 
