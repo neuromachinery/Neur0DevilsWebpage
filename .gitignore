@@ -8,3 +8,4 @@ Shared
 Temp/*
 uploads/*
 .env
+*.pem
