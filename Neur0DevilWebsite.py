@@ -374,7 +374,7 @@ if __name__ == "__main__":
     
     # Run with Uvicorn (supports SSL)
     uvicorn.run(
-        "your_filename:app",  # replace 'your_filename' with actual filename
+        "Neur0DevilWebsite:app",  # replace 'your_filename' with actual filename
         host="::",
         port=EXT_PORT,
         ssl_keyfile=CERT_KEY,
