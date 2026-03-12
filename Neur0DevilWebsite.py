@@ -12,6 +12,7 @@ from time import sleep
 from subprocess import run
 from PIL import Image
 from dotenv import load_dotenv
+import uvicorn
 load_dotenv()
 
 app = Flask(__name__)
@@ -69,37 +70,6 @@ def now():
 def getPreview(filepath:str):
     run(f'ffmpeg -i {filepath} -vf "select=eq(n\\,0),scale=256:256" -q:v 5 {filepath}_preview.jpg')
     return f'{filepath}_preview.jpg'
-"""
-def makeAtlas():
-    output_atlas_path = "atlas.png"
-    output_metadata_path = "atlas_metadata.json"
-
-    atlas_image = Image.new("RGBA", (4096, 4096), (0, 0, 0, 0))
-    listdir(PREVIEW_FOLDER)
-    metadata = {}
-
-    for preview_id in range(256):
-        preview_image_path = path.join(PREVIEW_FOLDER, f"{filename}_preview.jpg")
-        if not path.isfile(preview_image_path):
-            continue
-
-        preview_img = Image.open(preview_image_path).convert("RGBA")
-
-        x = (preview_id % 16) * 256
-        y = (preview_id // 16) * 256
-
-        atlas_image.paste(preview_img, (x, y))
-
-        # Add to metadata
-        metadata[preview_id] = filename
-
-    # Save atlas image
-    atlas_image.save("static/atlas.png")
-
-    # Save metadata JSON
-    with open(output_metadata_path, "w") as f:
-        json.dump(metadata, f, indent=4)
-"""
 def countingSort(arr, exp1): 
     n = len(arr) 
     output = [0] * (n) 
@@ -392,23 +362,23 @@ class NetPort():
         except Exception as E:
             ExceptionHandler(E)
 if __name__ == "__main__":
-    work=True
-    while work:
-        try:
-            @socketio.on_error()
-            def error_handler(E):
-                ExceptionHandler(E)
-            @socketio.on('disconnect')
-            def handle_disconnect():pass
-            NetPort().run()
-            socketio.run(app,host="::", port=EXT_PORT, certfile=CERTIFICATE,keyfile=CERT_KEY, debug=False)
-            quit()
-            
-        except KeyboardInterrupt as E:
-            ExceptionHandler(E)
-            socketio.stop()
-            work=False
-        except Exception as E:
-            ExceptionHandler(E)
-            socketio.stop() 
+    
+    @socketio.on_error()
+    def error_handler(E):
+        ExceptionHandler(E)
+    
+    @socketio.on('disconnect')
+    def handle_disconnect():pass
+    
+    NetPort().run()
+    
+    # Run with Uvicorn (supports SSL)
+    uvicorn.run(
+        "your_filename:app",  # replace 'your_filename' with actual filename
+        host="::",
+        port=EXT_PORT,
+        ssl_keyfile=CERT_KEY,
+        ssl_certfile=CERTIFICATE,
+        log_level="info"
+    )
 
